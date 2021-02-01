@@ -1,13 +1,38 @@
-const { exec } = require("child_process");
+const { exec } = require('child_process')
 
-exec("DISPLAY=':99' gource -f -1280x720 -r 25 -o - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -codec:v libx265 -preset slow -f mp4 commits.mp4", (error, stdout, stderr) => {
-  if (error) {
-    console.log(`error: ${error.message}`);
-    return;
+// This file can be changed according to user's convinience
+const scripts = require('./scripts.json')
+
+function gource(
+  scriptFile,
+  options = {
+    DISPLAY: 99,
   }
-  if (stderr) {
-    console.log(`stderr: ${stderr}`);
-    return;
+) {
+  try {
+    const script_ = scripts[scriptFile]
+    const shell_script = eval(script_) // here options is used with the ` operator
+    const script = exec(shell_script)
+
+    script.stdout.on('data', function (data) {
+      console.log(data.toString())
+      return 0
+    })
+    script.stderr.on('data', function (data) {
+      console.error(data.toString())
+      return false
+    })
+    script.on('exit', function (code) {
+      console.log('program ended with code: ' + code)
+      return code
+    })
+  } catch (err) {
+    console.error(err)
+    return false
   }
-  console.log(`output: ${stdout}`);
-});
+}
+
+gource('second', {
+  DISPLAY: 10,
+})
+module.exports = gource
