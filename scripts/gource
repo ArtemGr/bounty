@@ -1,0 +1,1 @@
+DISPLAY=DISPLAY_PARAM gource -f -RES_PARAM -r R_PARAM -o - | ffmpeg -y -r R_PARAM -f image2pipe -vcodec ppm -i - -codec:v LIB_PARAM -preset slow -f mp4 commits.mp4

@@ -1,38 +1,45 @@
 const { exec } = require('child_process')
+const fs = require('fs')
 
-// This file can be changed according to user's convinience
-const scripts = require('./scripts.json')
-
-function gource(
-  scriptFile,
+function runGourceCommand(
+  fileName,
   options = {
-    DISPLAY: 99,
-  }
+    DISPLAY_PARAM: "':99'",
+    RES_PARAM: '1280x720',
+    R_PARAM: 25,
+    LIB_PARAM: 'libx265',
+  },
 ) {
+  const fileCommand = fs.readFileSync(`./scripts/${fileName}`)
   try {
-    const script_ = scripts[scriptFile]
-    const shell_script = eval(script_) // here options is used with the ` operator
-    const script = exec(shell_script)
+    let cmd = fileCommand.toString()
+    for (let key in options) {
+      cmd = cmd.replace(key, options[key])
+    }
+    console.log('Command that is run -->', cmd)
 
+    const script = exec(cmd)
     script.stdout.on('data', function (data) {
       console.log(data.toString())
-      return 0
     })
     script.stderr.on('data', function (data) {
       console.error(data.toString())
-      return false
     })
     script.on('exit', function (code) {
       console.log('program ended with code: ' + code)
       return code
     })
-  } catch (err) {
-    console.error(err)
+  } catch (error) {
+    console.error(error)
     return false
   }
 }
 
-gource('second', {
-  DISPLAY: 10,
+runGourceCommand('gource', {
+  DISPLAY_PARAM: "':22'",
+  RES_PARAM: '1280x720',
+  R_PARAM: 25,
+  LIB_PARAM: 'libx265',
 })
-module.exports = gource
+
+module.exports = runGourceCommand
