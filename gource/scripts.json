@@ -1,4 +1,0 @@
-{
-  "first": "`DISPLAY=':${options.DISPLAY}' gource -f -1280x720 -r 25 -o - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -codec:v libx265 -preset slow -f mp4 commits.mp4`",
-  "second": "`echo ${options.DISPLAY}`"
-}

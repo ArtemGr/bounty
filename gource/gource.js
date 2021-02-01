@@ -4,10 +4,8 @@ const fs = require('fs')
 function runGourceCommand(
   fileName,
   options = {
-    DISPLAY_PARAM: "':99'",
     RES_PARAM: '1280x720',
-    R_PARAM: 25,
-    LIB_PARAM: 'libx265',
+    LIB_PARAM: 'libx264',
   },
 ) {
   const fileCommand = fs.readFileSync(`./scripts/${fileName}`)
@@ -35,11 +33,7 @@ function runGourceCommand(
   }
 }
 
-runGourceCommand('gource', {
-  DISPLAY_PARAM: "':22'",
-  RES_PARAM: '1280x720',
-  R_PARAM: 25,
-  LIB_PARAM: 'libx265',
-})
+// TODO: As a user I should be able to specify the script with a command line argument
+runGourceCommand('gource')
 
 module.exports = runGourceCommand
