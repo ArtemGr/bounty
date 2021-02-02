@@ -13,7 +13,7 @@ cf. https://github.com/cyburgee/ffmpeg-guide
 → → ☐ [lemon.io report](https://lemon.io/wp-content/uploads/2020/10/Startups_vs_Freelancers_2020_report_by_Lemon.pdf) ?  
 → ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs. Also the job matching ritual is suboptimal (see the chat with speedwares)  
 → ☐ Experiment with PeoplePerHour  
-→ ☐ Experiment with gun.io interviews  
+→ ☒ Experiment with gun.io interviews ⇒ The [Why you should join](https://i.imgur.com/OVCFBc5.png) step rubs me in a wrong way currently: sounds like a typical “oversell and underdeliver”, where a corporation would praise themselves and the dev would expect something good, until the “contrast effect” kicks in  
 → ☐ Experiment with lemon.io  
 → ☐ Experiment with toptal.com  
 
@@ -53,6 +53,7 @@ cf. https://github.com/cyburgee/ffmpeg-guide
 ☑ Consider the competition format,  
 cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/contest, https://codeforces.com/ ⇒ There is a low-hanging fruit of implementing competition-like benchmarks (high scores, halls of fame) over the open job database, announcing them on Twitter, displaying in UI. That is, instead of organizing a separate competition we might be able to reuse and improve the bounty and freelance benchmarks, perhaps also the quality and security reviews. That way it isn't just about competition but we can benchmark also, say, teamwork  
 ⇒ On the other hand, contests might be a way to find bottom-up ideas. Here's a little experiment: https://www.freelancer.com/contest/gource-tool-1885809/details  
+⇒ So when we “Post a Project” of Freelancer or “Post a Request” on Fiverr, it should be possible to tailor the Project/Request into a prompt for bottom-up/proactive suggestions  
 ☑ Experiment with https://www.bitfortip.com/ ⇒ Useful for gettins a better sense of average, of basic knowledge. Anything past the basics - we might want to elaborate or synchronize on ⇒ Good input from https://www.bitfortip.com/questions/1039
 
 ☐ Explore some of the literature adjucent to motivation streams  
@@ -95,21 +96,6 @@ cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/conte
 ☐ Look at gossipsub, as it might affect the design and the wishlists around the p2p layers  
 → ☐ [Gossipsub-v1.1 Evaluation Report](https://gateway.ipfs.io/ipfs/QmRAFP5DBnvNjdYSbWhEhVRJJDFCLpPyvew5GwCCB4VxM4)  
 → ☐ https://blog.ipfs.io/2020-05-20-gossipsub-v1.1/
-
-☐ Look at the “[Ecosystem Review](https://matrix.org/_matrix/media/r0/download/twitter.modular.im/981b258141aa0b197804127cd2f7d298757bad20)”
-
-☐ Investigate GUN  
-→ ☐ the first trace
-
-# work group
-
-@mhelander on SEA: “my part was to make SEA to work, how it's integrated into Gun is more @marknadal super skills I think...”, continued at https://discord.com/channels/612645357850984470/612645357850984473/793023656795045920
-
-@mimiza: “I only implemented SEA.certify(). It's just a small part in SEA. I don't even know SEA better than @mhelander”
-
-Mark: “@mhelander @jabis @mmalmi @rogowski @mimiza @go1dfish @Dletta probably have the best understanding of various internal parts”
-
-`#docs-wiki` can be used for pubsub
 
 # benchmarks
 
