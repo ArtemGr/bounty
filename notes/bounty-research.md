@@ -12,6 +12,10 @@ cf. https://github.com/cyburgee/ffmpeg-guide
 → ☑ https://www.bitfortip.com/questions/1055 looking for precedents  
 → → ☐ [lemon.io report](https://lemon.io/wp-content/uploads/2020/10/Startups_vs_Freelancers_2020_report_by_Lemon.pdf) ?  
 → ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs. Also the job matching ritual is suboptimal (see the chat with speedwares)  
+⇒ [Why is Fiverr bad?](https://www.quora.com/Why-is-Fiverr-bad/answers/116949930), imposes a certain timeframe  
+⇒ [outsourcing](https://forum.fiverr.com/t/is-outsourcing-allowed-on-fiverr-for-sellers/353768)  
+⇒ tip size is limited; but freelancers can edit the price  
+→ → ☐ Make a template and/or docu for Fiverr Requests  
 → ☐ Experiment with PeoplePerHour  
 → ☒ Experiment with gun.io interviews ⇒ The [Why you should join](https://i.imgur.com/OVCFBc5.png) step rubs me in a wrong way currently: sounds like a typical “oversell and underdeliver”, where a corporation would praise themselves and the dev would expect something good, until the “contrast effect” kicks in  
 → ☐ Experiment with lemon.io  
@@ -85,6 +89,7 @@ cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/conte
 → ☑ Interview with Shawkat  
 → ☑ Interview with Mario  
 → ☑ Interview with MV  
+→ ☑ OSS questions (with AI)  
 ☐ Consider creating a Telegram channel in order to allow for convenient video messaging  
 → ☐ See if Telescope is supported in Telegram groups  
 → ☑ Telescope promotes good video ecology: short videos are easier to discard and retry, easier to watch and to index, allow for chunked communication and dialogue. Question is, can we transfer this somehow to Discord? A bot that would copy the Telegram Telescope videos to Discord? And should we bother? ⇒ Discord can embed short (under 8 MB) libx264 mp4 videos, which seems good enough, though maybe we should collect the ways to record these  
