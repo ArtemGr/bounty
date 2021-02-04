@@ -9,5 +9,5 @@ cf. [Keep a Changelog](http://keepachangelog.com/),
 
 #### Thanks
 
-@Redpulse96 for scriptable Gource invocation  
-@ArifSanaullah for running Gource in GitHub Action
+[redpulse96](https://github.com/redpulse96) for scriptable Gource invocation  
+[ArifSanaullah](https://github.com/ArifSanaullah) for running Gource in GitHub Actions
