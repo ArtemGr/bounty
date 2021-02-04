@@ -1,6 +1,11 @@
 const { exec } = require('child_process')
 const fs = require('fs')
 
+// TODO: Once in a while gource fails with “unable to open display”,
+// this happens under WSL2 and on GitHub Actions
+// ( cf. https://github.com/ArtemGr/bounty/runs/1832745746 )
+// we should account for that and retry a number of times
+
 function runGourceCommand(
   fileName,
   options = {
