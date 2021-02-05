@@ -1,0 +1,1 @@
+wsl dash -c "DISPLAY=:99 gource -f -RES_PARAM -r 25 -o - | ffmpeg -y -r 25 -f image2pipe -vcodec ppm -i - -codec:v LIB_PARAM -preset slow -f mp4 commits.mp4"
