@@ -1,5 +1,7 @@
 
 ☑ Experiment with ObservableHQ graphs ⇒ https://observablehq.com/@artemgr/rusty-gun-a-story  
+☐ Experiment with [RunKit attachments](https://blog.runkit.com/2018/12/10/runkit-content-attachments-on-github/)  
+☐ Experiment with [Lucidchart](https://github.blog/2018-12-10-introducing-content-attachments-api/#lucidchart)  
 ☑ Make a larger map in `rusty-gun-a-story`  
 → ☑ Narrow down to major goals ⇒ Bottom-up development; modularity; transfer of knowledge in OSS  
 ☐ Gource in the README  
@@ -92,6 +94,7 @@ cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/conte
 ☑ Consider creating a Telegram channel in order to allow for convenient video messaging  
 → ☑ See if Telescope is supported in Telegram groups  
 → ☑ Telescope promotes good video ecology: short videos are easier to discard and retry, easier to watch and to index, allow for chunked communication and dialogue. Question is, can we transfer this somehow to Discord? A bot that would copy the Telegram Telescope videos to Discord? And should we bother? ⇒ Discord can embed short (under 8 MB) libx264 mp4 videos, which seems good enough, though maybe we should collect the ways to record these  
+☐ Experiment with [CloudApp](https://github.blog/2018-12-10-introducing-content-attachments-api/#cloudapp)  
 ☑ Figure how/if the Qualitative Interviewing can factor into the bounty-driven development  
 → ☑ File the idea of embedded QI  
 → ☑ Consider the format of public podcasts ⇒ Known downsides: time synchronization, TMI, hard to get different opinions from different people, postprocessing not included  
