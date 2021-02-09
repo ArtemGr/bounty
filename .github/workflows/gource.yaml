@@ -23,8 +23,10 @@ jobs:
               run: sudo apt-get install gource xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0 -y
             - name: Install ffmpeg & gifski
               run: sudo apt-get update && sudo snap install ffmpeg gifski
+            - name: Hide display
+              run: sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24
             - name: Run gource with xvfb
-              run: xvfb-run --auto-servernum gource -f -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
+              run: gource -f -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
             - name: create frames dir
               run: mkdir frames
             - name: Create images from video & del video
