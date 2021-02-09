@@ -26,7 +26,7 @@ jobs:
             - name: Hide display
               run: sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
             - name: Run gource with xvfb
-              run: gource -f -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
+              run: xvfb-run -a gource -f -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
             - name: create frames dir
               run: mkdir frames
             - name: Create images from video & del video
