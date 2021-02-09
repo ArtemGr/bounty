@@ -23,7 +23,7 @@ jobs:
             - name: Install ffmpeg & gifski
               run: sudo apt-get update && sudo snap install ffmpeg gifski
             - name: Run gource with xvfb
-              run: xvfb-run --auto-servernum --server-num=99 gource -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
+              run: xvfb-run --auto-servernum --server-num=99 gource -f -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
             - name: create frames dir
               run: mkdir frames
             - name: Create images from video & del video
