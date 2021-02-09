@@ -1,21 +1,25 @@
 
 ☑ Experiment with ObservableHQ graphs ⇒ https://observablehq.com/@artemgr/rusty-gun-a-story  
+☐ Experiment with [RunKit attachments](https://blog.runkit.com/2018/12/10/runkit-content-attachments-on-github/)  
+☐ Experiment with [Lucidchart](https://github.blog/2018-12-10-introducing-content-attachments-api/#lucidchart)  
 ☑ Make a larger map in `rusty-gun-a-story`  
 → ☑ Narrow down to major goals ⇒ Bottom-up development; modularity; transfer of knowledge in OSS  
 ☐ Gource in the README  
-cf. https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality  
-cf. https://github.com/cyburgee/ffmpeg-guide  
+→ ☐ Non-git upload  
+→ → ☐ Get [refresh token](https://developers.google.com/identity/protocols/oauth2#5.-refresh-the-access-token,-if-necessary.)  
+→ → ☐ [Store](https://docs.github.com/en/actions/reference/encrypted-secrets) the tokens  
+→ → ☐ [Upload mp4](https://quanticdev.com/articles/automating-my-youtube-uploads-using-nodejs/)  
 → ☐ Upload the Gource log also, making it accessible from ObservableHQ, in case we'd want to add dynamic JS visualizations later  
-☐ List contributors in Change Log, cf. https://github.com/Geal/nom/blob/master/CHANGELOG.md
+☑ List contributors in Change Log, cf. https://github.com/Geal/nom/blob/master/CHANGELOG.md
 
 ☐ Research informal freelancer networks  
+→ ☑ Make a template and/or docu for freelance jobs ⇒ https://observablehq.com/@artemgr/forward-running-freelance  
 → ☑ https://www.bitfortip.com/questions/1055 looking for precedents  
 → → ☐ [lemon.io report](https://lemon.io/wp-content/uploads/2020/10/Startups_vs_Freelancers_2020_report_by_Lemon.pdf) ?  
 → ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs. Also the job matching ritual is suboptimal (see the chat with speedwares)  
 ⇒ [Why is Fiverr bad?](https://www.quora.com/Why-is-Fiverr-bad/answers/116949930), imposes a certain timeframe  
 ⇒ [outsourcing](https://forum.fiverr.com/t/is-outsourcing-allowed-on-fiverr-for-sellers/353768)  
 ⇒ tip size is limited; but freelancers can edit the price  
-→ → ☐ Make a template and/or docu for Fiverr Requests  
 → ☐ Experiment with PeoplePerHour  
 → ☒ Experiment with gun.io interviews ⇒ The [Why you should join](https://i.imgur.com/OVCFBc5.png) step rubs me in a wrong way currently: sounds like a typical “oversell and underdeliver”, where a corporation would praise themselves and the dev would expect something good, until the “contrast effect” kicks in  
 → ☐ Experiment with lemon.io  
@@ -33,7 +37,7 @@ cf. https://github.com/cyburgee/ffmpeg-guide
 → → ☐ https://podcasts.apple.com/gb/podcast/turned-down-money/id1450112037?i=1000488352002  
 → → ☐ https://podcasts.apple.com/gb/podcast/creativity-as-therapy/id1450112037?i=1000466492227  
 → → ☐ https://podcasts.apple.com/gb/podcast/engaged-community-video/id1450112037?i=1000465137614  
-→ → ☐ https://clientsfromhell.net/tag/podcast/page/17/, checked: “May 07, 2015”  
+→ → ☐ https://clientsfromhell.net/tag/podcast/page/17/, checked: “Jul 14, 2015”  
 
 ☐ Benchmarks  
 → ☐ Different tasks should have different benchmarks  
@@ -71,29 +75,27 @@ cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/conte
 → → ☑ Discuss with Chet  
 → ☐ Flirt: Afterword  
 → ☐ Brain Tingles  
-→ ☐ What the F  
+→ ☐ What the F ⇒ _%  
 → ☐ Man's search for meaning  
-→ ☐ Louder Than Words ⇒ 4%  
-→ ☐ Pre-Suasion  
+→ ☐ Louder Than Words ⇒ 7%  
+→ ☐ Pre-Suasion ⇒ _%  
 → ☐ Пушистая книга ⇒ 43%  
+→ ☐ Learning From Strangers ⇒ _%  
 
-☐ Experiment with Qualitative Interviewing  
+☑ Experiment with Qualitative Interviewing  
 → ☑ Create a separate MarkDown space  
 → ☑ Transcript the first set of interviews  
 → ☑ Second round, self-wishing and the Happy New Year  
-→ ☐ Finish working through the book  
-→ ☐ Grab the book highlights  
-→ ☐ Revisit the book highlights  
 → ☑ Assemble a list of people whom we can ask about GUN  
-→ ☐ Interview with Aelita  
 → ☑ Interview with Shawkat  
 → ☑ Interview with Mario  
 → ☑ Interview with MV  
-→ ☑ OSS questions (with AI)  
-☐ Consider creating a Telegram channel in order to allow for convenient video messaging  
-→ ☐ See if Telescope is supported in Telegram groups  
+→ ☑ OSS questions (with AI), mv-ag-questions  
+☑ Consider creating a Telegram channel in order to allow for convenient video messaging  
+→ ☑ See if Telescope is supported in Telegram groups  
 → ☑ Telescope promotes good video ecology: short videos are easier to discard and retry, easier to watch and to index, allow for chunked communication and dialogue. Question is, can we transfer this somehow to Discord? A bot that would copy the Telegram Telescope videos to Discord? And should we bother? ⇒ Discord can embed short (under 8 MB) libx264 mp4 videos, which seems good enough, though maybe we should collect the ways to record these  
-☐ Figure how/if the Qualitative Interviewing can factor into the bounty-driven development  
+☐ Experiment with [CloudApp](https://github.blog/2018-12-10-introducing-content-attachments-api/#cloudapp)  
+☑ Figure how/if the Qualitative Interviewing can factor into the bounty-driven development  
 → ☑ File the idea of embedded QI  
 → ☑ Consider the format of public podcasts ⇒ Known downsides: time synchronization, TMI, hard to get different opinions from different people, postprocessing not included  
 → ☑ Experiment with video attachments on GitHub
