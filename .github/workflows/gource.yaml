@@ -35,8 +35,8 @@ jobs:
             # We don't want to do this here, per
             # https://homes.cs.washington.edu/~mernst/advice/version-control.html#Dont_commit_generated_files
             # but might still be useful if there is no better option
-            #- name: Setup git
-            #  uses: mikeal/publish-to-github-action@master
-            #  env:
-            #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #      BRANCH_NAME: 'main' #optional defaults to master
+            - name: Setup git
+              uses: mikeal/publish-to-github-action@master
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  BRANCH_NAME: 'main' #optional defaults to master
