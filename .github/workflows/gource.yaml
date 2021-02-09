@@ -14,8 +14,6 @@ jobs:
         # cf. https://github.com/actions/virtual-environments/issues/228#issuecomment-637362224
         runs-on: ubuntu-latest
         name: Setting up gource
-        env:
-            DISPLAY: :0
 
         steps:
             - uses: actions/checkout@v2
@@ -24,7 +22,7 @@ jobs:
             - name: Install ffmpeg & gifski
               run: sudo apt-get update && sudo snap install ffmpeg gifski
             - name: Hide display
-              run: sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+              run: sudo /usr/bin/Xvfb :99 -screen 0 1280x1024x24 &
             - name: Run gource with xvfb
               run: xvfb-run -a gource -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
             - name: create frames dir
