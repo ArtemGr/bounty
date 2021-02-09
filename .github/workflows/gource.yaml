@@ -1,18 +1,17 @@
-# This is a basic workflow to help you get started with Actions
+# https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action
+# cf. https://github.com/sandrokeil/docker-files/tree/master/gource
+# cf. https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality
 
 name: Testing gource
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the main branch
 on:
     push:
         branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-    # This workflow contains a single job called "build"
     build:
-        # The type of runner that the job will run on
+        # cf. https://github.com/actions/virtual-environments/issues/228#issuecomment-637362224
         runs-on: ubuntu-latest
         name: Setting up gource
 
@@ -32,8 +31,12 @@ jobs:
               run: rm -f ./gource.gif && gifski -o gource.gif ./frames/*.png && rm -rf ./frames
             - name: List directory contents
               run: sudo find .
-            - name: Setup git
-              uses: mikeal/publish-to-github-action@master
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  BRANCH_NAME: 'main' #optional defaults to master
+            # Shows how to push the generated GIF into the repository
+            # We don't want to do this here, per
+            # https://homes.cs.washington.edu/~mernst/advice/version-control.html#Dont_commit_generated_files
+            # but might still be useful if there is no better option
+            #- name: Setup git
+            #  uses: mikeal/publish-to-github-action@master
+            #  env:
+            #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #      BRANCH_NAME: 'main' #optional defaults to master
