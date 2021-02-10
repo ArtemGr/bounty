@@ -17,11 +17,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: update
-        run: sudo apt update
       - name: install nodejs
         # https://github.com/nodesource/distributions/blob/master/README.md#debinstall
-        run: (curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -) && sudo apt install -y nodejs
+        # NB: also runs the `apt update` for us
+        run: (curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -) && sudo apt install -y nodejs && node -e 'console.log ("ok")'
       - name: install gource xvfb ffmpeg
         run: sudo apt install -y gource xvfb ffmpeg
       - name: install gifski
