@@ -1,0 +1,18 @@
+# Editor configuration, see http://editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+
+[*.yaml]
+indent_size = 2
+
+[*.md]
+indent_size = 4
+max_line_length = off
+# Trailing whitespaces are useful in MD-styled inline documentation.
+trim_trailing_whitespace = false

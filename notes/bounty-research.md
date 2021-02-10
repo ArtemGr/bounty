@@ -6,6 +6,7 @@
 → ☑ Narrow down to major goals ⇒ Bottom-up development; modularity; transfer of knowledge in OSS  
 ☐ Gource in the README  
 → ☐ Non-git upload  
+→ → ☐ Port “gdrive-upload-demo”, “aga.md”  
 → → ☐ Get [refresh token](https://developers.google.com/identity/protocols/oauth2#5.-refresh-the-access-token,-if-necessary.)  
 → → ☐ [Store](https://docs.github.com/en/actions/reference/encrypted-secrets) the tokens  
 → → ☐ [Upload mp4](https://quanticdev.com/articles/automating-my-youtube-uploads-using-nodejs/)  
@@ -14,9 +15,10 @@
 
 ☐ Research informal freelancer networks  
 → ☑ Make a template and/or docu for freelance jobs ⇒ https://observablehq.com/@artemgr/forward-running-freelance  
+→ → ☐ Freelance.com moderation might dislike external links. Experiment with adding the link *after* the initial moderation?  
 → ☑ https://www.bitfortip.com/questions/1055 looking for precedents  
 → → ☐ [lemon.io report](https://lemon.io/wp-content/uploads/2020/10/Startups_vs_Freelancers_2020_report_by_Lemon.pdf) ?  
-→ ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs. Also the job matching ritual is suboptimal (see the chat with speedwares)  
+→ ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs (NB: Freelancer also [has this](https://www.freelancer.com/search/users/)). Also the job matching ritual is suboptimal (see the chat with speedwares)  
 ⇒ [Why is Fiverr bad?](https://www.quora.com/Why-is-Fiverr-bad/answers/116949930), imposes a certain timeframe  
 ⇒ [outsourcing](https://forum.fiverr.com/t/is-outsourcing-allowed-on-fiverr-for-sellers/353768)  
 ⇒ tip size is limited; but freelancers can edit the price  

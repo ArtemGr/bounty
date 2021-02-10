@@ -5,38 +5,38 @@
 name: Testing gource
 
 on:
-    push:
-        branches: [main]
+  push:
+    branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-    build:
-        # cf. https://github.com/actions/virtual-environments/issues/228#issuecomment-637362224
-        runs-on: ubuntu-20.04
-        name: Setting up gource
+  build:
+    # cf. https://github.com/actions/virtual-environments/issues/228#issuecomment-637362224
+    runs-on: ubuntu-20.04
+    name: Setting up gource
 
-        steps:
-            - uses: actions/checkout@v2
-            - name: Install gource & xvfb
-              run: sudo apt-get install gource xvfb -y
-            - name: Install ffmpeg & gifski
-              run: sudo apt-get update && sudo snap install ffmpeg gifski
-            - name: Run gource with xvfb
-              run: xvfb-run --auto-servernum --server-num=99 gource -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
-            - name: create frames dir
-              run: mkdir frames
-            - name: Create images from video & del video
-              run: ffmpeg -i ./gource.mp4  -r 5 frames/%04d.png && rm ./gource.mp4
-            - name: del old gif & Create gif from images & del frames
-              run: rm -f ./gource.gif && gifski -o gource.gif ./frames/*.png && rm -rf ./frames
-            - name: List directory contents
-              run: sudo find .
-            # Shows how to push the generated GIF into the repository
-            # We don't want to do this here, per
-            # https://homes.cs.washington.edu/~mernst/advice/version-control.html#Dont_commit_generated_files
-            # but might still be useful if there is no better option
-            #- name: Setup git
-            #  uses: mikeal/publish-to-github-action@master
-            #  env:
-            #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #      BRANCH_NAME: 'main' #optional defaults to master
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install gource & xvfb
+        run: sudo apt-get install gource xvfb -y
+      - name: Install ffmpeg & gifski
+        run: sudo apt-get update && sudo snap install ffmpeg gifski
+      - name: Run gource with xvfb
+        run: xvfb-run --auto-servernum --server-num=99 gource -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
+      - name: create frames dir
+        run: mkdir frames
+      - name: Create images from video & del video
+        run: ffmpeg -i ./gource.mp4  -r 5 frames/%04d.png && rm ./gource.mp4
+      - name: del old gif & Create gif from images & del frames
+        run: rm -f ./gource.gif && gifski -o gource.gif ./frames/*.png && rm -rf ./frames
+      - name: List directory contents
+        run: sudo find .
+      # Shows how to push the generated GIF into the repository
+      # We don't want to do this here, per
+      # https://homes.cs.washington.edu/~mernst/advice/version-control.html#Dont_commit_generated_files
+      # but might still be useful if there is no better option
+      #- name: Setup git
+      #  uses: mikeal/publish-to-github-action@master
+      #  env:
+      #      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #      BRANCH_NAME: 'main' #optional defaults to master
