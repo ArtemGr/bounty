@@ -2,7 +2,7 @@
 # cf. https://github.com/sandrokeil/docker-files/tree/master/gource
 # cf. https://superuser.com/questions/556029/how-do-i-convert-a-video-to-gif-using-ffmpeg-with-reasonable-quality
 
-name: Testing gource
+name: gource
 
 on:
   push:
@@ -13,12 +13,15 @@ jobs:
   build:
     # cf. https://github.com/actions/virtual-environments/issues/228#issuecomment-637362224
     runs-on: ubuntu-20.04
-    name: Setting up gource
+    name: gource
 
     steps:
       - uses: actions/checkout@v2
       - name: update
         run: sudo apt update
+      - name: install nodejs
+        # https://github.com/nodesource/distributions/blob/master/README.md#debinstall
+        run: (curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -) && sudo apt install -y nodejs
       - name: install gource xvfb ffmpeg
         run: sudo apt install -y gource xvfb ffmpeg
       - name: install gifski
