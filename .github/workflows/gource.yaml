@@ -23,21 +23,15 @@ jobs:
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v1
               with:
-                node-version: ${{ matrix.node-version }}
+                  node-version: ${{ matrix.node-version }}
             - run: sudo apt-get install xvfb
-            - name: npm install, build, and test
-              run: |
-                npm i
-                xvfb-run --auto-servernum npm test
-              env:
-                CI: true
-            - name: Cleanup xvfb pidx
-              uses: bcomnes/cleanup-xvfb@v1
             - name: Install gource & xvfb and other deps
-              run: sudo apt-get install gource xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0 -y
+              run: sudo apt-get install gource libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0 -y
             - name: Install ffmpeg & gifski
               run: sudo apt-get update && sudo snap install ffmpeg gifski
             - name: Run gource with xvfb
+              env:
+                  CI: true
               run: xvfb-run -a gource -f -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
             - name: create frames dir
               run: mkdir frames
@@ -56,3 +50,5 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   BRANCH_NAME: 'main' #optional defaults to master
+            - name: Cleanup xvfb pidx
+              uses: bcomnes/cleanup-xvfb@v1
