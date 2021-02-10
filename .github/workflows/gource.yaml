@@ -17,19 +17,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install gource & xvfb
-        run: sudo apt-get install gource xvfb -y
-      - name: Install ffmpeg & gifski
-        run: sudo apt-get update && sudo snap install ffmpeg gifski
-      - name: Run gource with xvfb
+      - name: update
+        run: sudo apt update
+      - name: install gource xvfb ffmpeg
+        run: sudo apt install -y gource xvfb ffmpeg
+      - name: install gifski
+        run: sudo snap install gifski
+      - name: gource to ffmpeg
         run: xvfb-run --auto-servernum --server-num=99 gource -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
-      - name: create frames dir
-        run: mkdir frames
-      - name: Create images from video & del video
-        run: ffmpeg -i ./gource.mp4  -r 5 frames/%04d.png && rm ./gource.mp4
-      - name: del old gif & Create gif from images & del frames
-        run: rm -f ./gource.gif && gifski -o gource.gif ./frames/*.png && rm -rf ./frames
-      - name: List directory contents
+      - name: mp4 to frames
+        run: mkdir frames && ffmpeg -i ./gource.mp4 -r 5 frames/%04d.png
+      - name: frames to gif
+        run: gifski -o gource.gif ./frames/*.png && rm -rf ./frames
+      - name: list files
         run: sudo find .
       # Shows how to push the generated GIF into the repository
       # We don't want to do this here, per
