@@ -15,7 +15,7 @@
 
 ☐ Research informal freelancer networks  
 → ☑ Make a template and/or docu for freelance jobs ⇒ https://observablehq.com/@artemgr/forward-running-freelance  
-→ → ☐ Freelance.com moderation might dislike external links. Experiment with adding the link *after* the initial moderation?  
+→ → ☑ Freelance.com moderation might dislike external links. Experiment with adding the link *after* the initial moderation?  
 → ☑ https://www.bitfortip.com/questions/1055 looking for precedents  
 → → ☐ [lemon.io report](https://lemon.io/wp-content/uploads/2020/10/Startups_vs_Freelancers_2020_report_by_Lemon.pdf) ?  
 → ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs (NB: Freelancer also [has this](https://www.freelancer.com/search/users/)). Also the job matching ritual is suboptimal (see the chat with speedwares)  
