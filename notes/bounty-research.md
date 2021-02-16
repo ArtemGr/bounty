@@ -42,6 +42,7 @@
 → → ☐ https://clientsfromhell.net/tag/podcast/page/17/, checked: “Jul 14, 2015”  
 
 ☐ Benchmarks  
+→ ☐ Can we gauge whether a bounty improves decision making for a particular person? cf. Intellect Versus Intuition — A Dichotomy in the Reception of Nonverbal Communication 1977  
 → ☐ Different tasks should have different benchmarks  
 → ☐ Improve the way benchmarks are communicated in a task  
 → → ☐ Interactive ObservableHQ guide?  

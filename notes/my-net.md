@@ -4,15 +4,23 @@
 → ☐ AI Dungeon  
 → ☐ ObservableHQ interface  
 → ☐ klines server  
+→ ☐ random IMDb  
+→ ☐ kindle
 
 ☐ Experiment with gathering notes and folksonomies  
 → ☐ Long tail  
 → ☐ City map
 
+☐ Mobile notes  
+→ ☐ NodeJS on Termux  
+→ ☐ amynet home screen widget
+
 ## ideas around the “my net” toolbox
 
 * Offline-first. The code (application, toolbox) should help me with networks (clients, developers, providers, products) even without the internet. The information I enter should be useful first and foremost to myself. That way, if I decide to share it, the information will be truthful and hence also the information I'm getting from others.  
 (Compatible with [Syntropy](https://youtu.be/gSPNRu4ZPvE), the argoforestry metaphor?)
+
+(Folksonomies are immediately useful as a way to retain information, to counter and/or detect eventual Transference, to guide simplifications. This might not be obvious).
 
 * Reuse. The code should add what's missing. If something is already implemented (job and bounty sites, markets, social networks) we should plug into the existing system, provide an added Value for them. For example, Upwork and GitHub already track the open source and private engagements, we can add combined statistics and graphics for them.  
 🧧 One application of offline-first and reuse is to be able to export the information into an archive and post it as a conventional forum attachment, or send with email, etc.
