@@ -5,6 +5,7 @@
 → ☐ ObservableHQ interface  
 → ☐ klines server  
 → ☐ random IMDb  
+→ ☐ steam  
 → ☐ kindle
 
 ☐ Experiment with gathering notes and folksonomies  
@@ -13,7 +14,8 @@
 
 ☐ Mobile notes  
 → ☐ NodeJS on Termux  
-→ ☐ amynet home screen widget
+→ → ☑ Import to Agenda  
+→ ☒ amynet home screen widget
 
 ## ideas around the “my net” toolbox
 
