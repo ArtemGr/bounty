@@ -1,2 +1,6 @@
 # local vscode
 /.vscode/tasks.json
+
+# nodejs
+/node_modules
+/package-lock.json

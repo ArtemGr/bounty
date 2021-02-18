@@ -1,5 +1,10 @@
 
 ☐ Write a couple of components and see how can we plug them together  
+→ ☐ a tool for freelancers to monitor [Freelancer](https://developers.freelancer.com/)  
+→ → ☐ Fiverr  
+→ → ☐ Upwork  
+→ → ☐ peopleperhour  
+→ → ☐ bountysource  
 → ☐ VSCode autocompletion  
 → ☐ AI Dungeon  
 → ☐ ObservableHQ interface  

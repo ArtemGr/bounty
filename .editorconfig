@@ -8,6 +8,9 @@ end_of_line = lf
 indent_style = space
 insert_final_newline = true
 
+[*.js]
+indent_size = 2
+
 [*.yaml]
 indent_size = 2
 
