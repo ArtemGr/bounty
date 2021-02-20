@@ -11,6 +11,9 @@
 → → ☐ [Store](https://docs.github.com/en/actions/reference/encrypted-secrets) the tokens  
 → → ☐ [Upload mp4](https://quanticdev.com/articles/automating-my-youtube-uploads-using-nodejs/)  
 → ☐ Upload the Gource log also, making it accessible from ObservableHQ, in case we'd want to add dynamic JS visualizations later  
+☐ Gource on Android  
+→ ☐ Experiment with home screen widget animation  
+→ ☐ Experiment with live wallpaper animation  
 ☑ List contributors in Change Log, cf. https://github.com/Geal/nom/blob/master/CHANGELOG.md
 
 ☐ Research informal freelancer networks  

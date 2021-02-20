@@ -1,4 +1,14 @@
 
+☐ Project/Request automation  
+→ ☐ GitHub component: create issue  
+→ ☐ Telegram: post to https://t.me/bounty_aga  
+→ ☐ bountysource: post bounty  
+→ ☐ Freelancer: post Project  
+→ ☐ Fiverr: post Request  
+→ ☐ peopleperhour: post project  
+→ ☐ track communication, “passing the ball”  
+→ ☐ QI questions, tags, notes
+
 ☐ Write a couple of components and see how can we plug them together  
 → ☐ a tool for freelancers to monitor [Freelancer](https://developers.freelancer.com/)  
 → → ☐ Fiverr  
