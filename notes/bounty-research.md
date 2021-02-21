@@ -25,7 +25,7 @@
 ⇒ [Why is Fiverr bad?](https://www.quora.com/Why-is-Fiverr-bad/answers/116949930), imposes a certain timeframe  
 ⇒ [outsourcing](https://forum.fiverr.com/t/is-outsourcing-allowed-on-fiverr-for-sellers/353768)  
 ⇒ tip size is limited; but freelancers can edit the price  
-→ ☐ Experiment with PeoplePerHour  
+→ ☐ Experiment with PeoplePerHour ⇒ Moderation says “The content of the Project you have posted is very descriptive, and the freelancers might not completely understand your requirements”: 1) sounds like endorsement of the Waterfall Model; 2) prevents from gauging the quality and proactiveness of the bids  
 → ☒ Experiment with gun.io interviews ⇒ The [Why you should join](https://i.imgur.com/OVCFBc5.png) step rubs me in a wrong way currently: sounds like a typical “oversell and underdeliver”, where a corporation would praise themselves and the dev would expect something good, until the “contrast effect” kicks in  
 → ☐ Experiment with lemon.io  
 → ☐ Experiment with toptal.com  
@@ -85,7 +85,7 @@ cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/conte
 → ☐ Man's search for meaning  
 → ☐ Louder Than Words ⇒ 7%  
 → ☐ Pre-Suasion ⇒ _%  
-→ ☐ Пушистая книга ⇒ 43%  
+→ ☐ Пушистая книга ⇒ 62%  
 → ☐ Learning From Strangers ⇒ _%  
 
 ☑ Experiment with Qualitative Interviewing  
