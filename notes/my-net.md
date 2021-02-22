@@ -4,9 +4,12 @@
 → ☐ Telegram: post to https://t.me/bounty_aga  
 → ☐ bountysource: post bounty  
 → ☐ Freelancer: post Project  
+→ → ☐ unified interface to bids and conversations  
+→ → ☐ option to start a bid chat with a question that wasn't answered in the bid  
 → ☐ Fiverr: post Request  
 → ☐ peopleperhour: post project  
 → ☐ track communication, “passing the ball”  
+→ ☐ send reminders and/or suggest a change of tactics when the ball is stuck  
 → ☐ QI questions, tags, notes  
 → ☐ close issue, stop projects, reclaim bounty
 

@@ -24,7 +24,8 @@
 → ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs (NB: Freelancer also [has this](https://www.freelancer.com/search/users/)). Also the job matching ritual is suboptimal (see the chat with speedwares)  
 ⇒ [Why is Fiverr bad?](https://www.quora.com/Why-is-Fiverr-bad/answers/116949930), imposes a certain timeframe  
 ⇒ [outsourcing](https://forum.fiverr.com/t/is-outsourcing-allowed-on-fiverr-for-sellers/353768)  
-⇒ tip size is limited; but freelancers can edit the price  
+⇒ Tip size is limited; but freelancers can edit the price  
+⇒ Good chance is that most Offers are either automated or ran by low key gatekeepers, tasked with eliciting the “details”; when Request contains a question that wasn't answered in the Offer then opening a chat and repeating the question tends to produce no answer as well, though there might be exceptions  
 → ☐ Experiment with PeoplePerHour ⇒ Moderation says “The content of the Project you have posted is very descriptive, and the freelancers might not completely understand your requirements”: 1) sounds like endorsement of the Waterfall Model; 2) prevents from gauging the quality and proactiveness of the bids  
 → ☒ Experiment with gun.io interviews ⇒ The [Why you should join](https://i.imgur.com/OVCFBc5.png) step rubs me in a wrong way currently: sounds like a typical “oversell and underdeliver”, where a corporation would praise themselves and the dev would expect something good, until the “contrast effect” kicks in  
 → ☐ Experiment with lemon.io  
