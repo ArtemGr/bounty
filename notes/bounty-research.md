@@ -16,6 +16,10 @@
 → ☐ Experiment with live wallpaper animation  
 ☑ List contributors in Change Log, cf. https://github.com/Geal/nom/blob/master/CHANGELOG.md
 
+☐ Testable tasks/projects/requests  
+→ ☐ Explore https://deepspec.org/main ?  
+→ ☐ Look deeper at [Model-Based Testing of Networked Applications](https://arxiv.org/pdf/2102.00378.pdf) ?  
+
 ☐ Research informal freelancer networks  
 → ☑ Make a template and/or docu for freelance jobs ⇒ https://observablehq.com/@artemgr/forward-running-freelance  
 → → ☑ Freelance.com moderation might dislike external links. Experiment with adding the link *after* the initial moderation?  
