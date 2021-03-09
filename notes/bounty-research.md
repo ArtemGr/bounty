@@ -3,7 +3,8 @@
 ☐ Experiment with [RunKit attachments](https://blog.runkit.com/2018/12/10/runkit-content-attachments-on-github/)  
 ☐ Experiment with [Lucidchart](https://github.blog/2018-12-10-introducing-content-attachments-api/#lucidchart)  
 ☑ Make a larger map in `rusty-gun-a-story`  
-→ ☑ Narrow down to major goals ⇒ Bottom-up development; modularity; transfer of knowledge in OSS  
+→ ☑ Narrow down to major goals ⇒ Bottom-up development; modularity; transfer of knowledge in OSS ⇒ Also the problem we've seen with maps is complexity. The reason why the maps are seldom used in practice might be in the overhead of encoding and maintaining the various relationships  
+![complex map](https://i.imgur.com/DYWmkMls.jpg)  
 ☐ Gource in the README  
 → ☐ Non-git upload  
 → → ☐ Port “gdrive-upload-demo”, “aga.md”  
@@ -17,14 +18,15 @@
 ☑ List contributors in Change Log, cf. https://github.com/Geal/nom/blob/master/CHANGELOG.md
 
 ☐ Testable tasks/projects/requests  
-→ ☐ Explore https://deepspec.org/main ?  
-→ ☐ Look deeper at [Model-Based Testing of Networked Applications](https://arxiv.org/pdf/2102.00378.pdf) ?  
+→ ☑ Explore https://deepspec.org/main ? ⇒ Interesting concept, but no one we know is using it, most people either never heard of Coq or are not asking the questions to which the Coq might be an answer (fitness function, acceptance testing); plus the learning curve seems to be steep, too much overhead to be used in the wild  
+→ ☒ Look deeper at [Model-Based Testing of Networked Applications](https://arxiv.org/pdf/2102.00378.pdf) ? ⇒ We're not quite there yet in terms of resources  
+→ ☐ Experiment with verbal description of the tests in jobs and milestones  
+→ → ☐ Look for precedence in acceptance testing and fitness functions
 
 ☐ Research informal freelancer networks  
 → ☑ Make a template and/or docu for freelance jobs ⇒ https://observablehq.com/@artemgr/forward-running-freelance  
 → → ☑ Freelance.com moderation might dislike external links. Experiment with adding the link *after* the initial moderation?  
 → ☑ https://www.bitfortip.com/questions/1055 looking for precedents  
-→ → ☐ [lemon.io report](https://lemon.io/wp-content/uploads/2020/10/Startups_vs_Freelancers_2020_report_by_Lemon.pdf) ?  
 → ☑ Experiment with fiverr ⇒ Learned that developers would often prefer to get proposals, instead of manually filtering through the jobs (NB: Freelancer also [has this](https://www.freelancer.com/search/users/)). Also the job matching ritual is suboptimal (see the chat with speedwares)  
 ⇒ [Why is Fiverr bad?](https://www.quora.com/Why-is-Fiverr-bad/answers/116949930), imposes a certain timeframe  
 ⇒ [outsourcing](https://forum.fiverr.com/t/is-outsourcing-allowed-on-fiverr-for-sellers/353768)  
@@ -90,8 +92,9 @@ cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/conte
 → ☐ Man's search for meaning  
 → ☐ Louder Than Words ⇒ 7%  
 → ☐ Pre-Suasion ⇒ _%  
-→ ☐ Пушистая книга ⇒ 62%  
+→ ☑ Пушистая книга  
 → ☐ Learning From Strangers ⇒ _%  
+→ ☐ LGDM3x ⇒ at Module 3, “Key Complexity Concepts Unpacked”  
 
 ☑ Experiment with Qualitative Interviewing  
 → ☑ Create a separate MarkDown space  
