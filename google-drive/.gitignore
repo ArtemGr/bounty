@@ -1,0 +1,7 @@
+
+# nodejs
+/node_modules
+/package-lock.json
+
+# google secrets
+/client_secret_*.json
