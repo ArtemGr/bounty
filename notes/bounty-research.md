@@ -69,7 +69,7 @@
 → ☑ “take a break” experiment ⇒ https://github.com/ArtemGr/bounty/issues/5; https://www.freelancer.com/contest/take-a-break-go-out-and-make-a-picture-1873762/entries; https://www.upwork.com/ab/applicants/1347469384349327360/job-details; https://www.freelancer.com/contest/twitter-tag-for-fun-and-social-contests-1880774/details  
 → ☑ Start Twitter contests
 
-☐ RLS bountry experiment (https://www.reddit.com/r/rust/comments/kur3vn/rls_bounty_583_to_fix_stuck_on_indexing/)
+☑ RLS bountry experiment (https://www.reddit.com/r/rust/comments/kur3vn/rls_bounty_583_to_fix_stuck_on_indexing/) ⇒ Despite the bad publicity it *looks* like the bug was fixed soon after we've placed the bounty, even though nobody has claimed it or followed up in the issue
 
 ☑ Consider the competition format,  
 cf. https://vk.com/durovschallenge, https://t.me/contests_ru, https://t.me/contest, https://codeforces.com/ ⇒ There is a low-hanging fruit of implementing competition-like benchmarks (high scores, halls of fame) over the open job database, announcing them on Twitter, displaying in UI. That is, instead of organizing a separate competition we might be able to reuse and improve the bounty and freelance benchmarks, perhaps also the quality and security reviews. That way it isn't just about competition but we can benchmark also, say, teamwork  

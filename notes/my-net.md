@@ -13,6 +13,9 @@
 → ☐ QI questions, tags, notes  
 → ☐ close issue, stop projects, reclaim bounty
 
+☐ Explore https://github.com/EdwardJRoss/job-advert-analysis  
+→ ☐ Reproduce some of [Common Crawl extraction](https://skeptric.com/common-crawl-job-ads/)
+
 ☐ Write a couple of components and see how can we plug them together  
 → ☐ a tool for freelancers to monitor [Freelancer](https://developers.freelancer.com/)  
 → → ☐ Fiverr  
