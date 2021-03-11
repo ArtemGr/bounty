@@ -26,7 +26,7 @@ jobs:
       - name: install gifski
         run: sudo snap install gifski
       - name: gource to ffmpeg
-        run: xvfb-run --auto-servernum --server-num=99 gource -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
+        run: xvfb-run --server-num=99 gource -1280x720 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 gource.mp4
       - name: mp4 to frames
         run: mkdir frames && ffmpeg -i ./gource.mp4 -r 5 frames/%04d.png
       - name: frames to gif
