@@ -4,7 +4,7 @@
 ☐ Experiment with [Lucidchart](https://github.blog/2018-12-10-introducing-content-attachments-api/#lucidchart)  
 ☑ Make a larger map in `rusty-gun-a-story`  
 → ☑ Narrow down to major goals ⇒ Bottom-up development; modularity; transfer of knowledge in OSS ⇒ Also the problem we've seen with maps is complexity. The reason why the maps are seldom used in practice might be in the overhead of encoding and maintaining the various relationships  
-![complex map](https://i.imgur.com/DYWmkMls.jpg)  
+[![complex map](https://i.imgur.com/DYWmkMls.jpg)](https://i.imgur.com/DYWmkMl.jpg)  
 ☐ Gource in the README  
 → ☐ Non-git upload  
 → → ☐ Port “gdrive-upload-demo”, “aga.md”  
@@ -21,7 +21,9 @@
 → ☑ Explore https://deepspec.org/main ? ⇒ Interesting concept, but no one we know is using it, most people either never heard of Coq or are not asking the questions to which the Coq might be an answer (fitness function, acceptance testing); plus the learning curve seems to be steep, too much overhead to be used in the wild  
 → ☒ Look deeper at [Model-Based Testing of Networked Applications](https://arxiv.org/pdf/2102.00378.pdf) ? ⇒ We're not quite there yet in terms of resources  
 → ☐ Experiment with verbal description of the tests in jobs and milestones  
-→ → ☐ Look for precedence in acceptance testing and fitness functions
+→ → ☐ Look for precedence in acceptance testing and fitness functions  
+→ ☐ Experiment with adding explicit timeframes to the tasks (“if takes more than N hours to research and implement then reach out to me with an update”)  
+→ ☐ Create a template / cheatsheet for a single step
 
 ☐ Research informal freelancer networks  
 → ☑ Make a template and/or docu for freelance jobs ⇒ https://observablehq.com/@artemgr/forward-running-freelance  
