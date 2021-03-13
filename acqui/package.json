@@ -18,6 +18,7 @@
   "dependencies": {
     "date-and-time": "^0.14.2",
     "log": "gist:25fad725870b0ada74df2bce7d115cc1",
-    "terminal-kit": "^1.48.1"
+    "terminal-kit": "^2.0.5",
+    "yaml": "^2.0.0-3"
   }
 }
