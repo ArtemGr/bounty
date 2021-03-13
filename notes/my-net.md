@@ -26,7 +26,7 @@
 → ☐ AI Dungeon  
 → ☐ ObservableHQ interface  
 → ☐ klines server  
-→ ☐ random IMDb  
+→ ☐ IMDb (use case: www.suggestmemovie.com over watchlist)  
 → ☐ steam  
 → ☐ dice length graphics, DP  
 → ☐ kindle
@@ -62,13 +62,14 @@ d) Truth versus culture, [biased towards negative](https://twitter.com/Artemciy/
 * Multi-faced. Similar but not equal to anonymity, the idea here is for some traits to be discoverable only when looked for. For instance, developers would often optimize their profile and/or CV to match well a single and narrow specialization, cutting away at anything that doesn't match it. While helpful on the outset, it might prevent us from discovering new and interesting synergies. Maybe the toolset should allow for a gradual discovery of certain folksonomies.
 
 * Pluggable. There should be a container and/or a glue for the plugins. The plugins can be, in turn, small, simple, DSL/DDD-readable, free of unnecessary boilerplate.  
-Proxy plugins can help with invoking internet plugins, which might in turn be hosted on repl.it, runkit.com, colab/kaggle, or in an observablehq cell.  
+Proxy plugins can help with invoking internet plugins, which might in turn be hosted on repl.it, runkit.com, colab/kaggle, or in an [observablehq cell](https://github.com/endpointservices/serverlesscells).  
 GitHub plugins can share progress updates and GIFs.  
 VSCode/platform/Discord-status plugins might be helpful with homing on a good time.  
 A plugin might get a structured access to the Steam games and then another plugin might find the writer's name in the description of the Choice of Games titles.  
 The user interfaces are pluggable as well. Some might be tinkered with on ObservableHQ
 
-* Literate. The tools should bear descriptions and use case examples in the code. The databases should be readable (such as JSON with comments).
+* Literate. The tools should bear descriptions and use case examples in the code. The databases should be readable (such as [YAML with comments](https://github.com/ArtemGr/bounty/blob/122f15efcb5b68810042e99f673793461b260207/acqui/acqui.js#L43)).  
+[“teaching must be central to your strategy”](https://observablehq.com/@mbostock/10-years-of-open-source-visualization)
 
 * Graphical. Generating shiny things and benchmarks. Maps.
 
