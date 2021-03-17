@@ -10,17 +10,16 @@ const readline = require ('readline');
 const termkit = require ('terminal-kit');
 const {log} = require ('log');
 const yaml = require ('yaml');  // https://github.com/eemeli/yaml
-const {YAMLMap} = require ('yaml/types');
 
 const HOME = os.homedir()
-
-// TODO: Consider using a readable time representation instead
+const iso8601m = date.compile ('YYYY-MM-DDTHH:mm[Z]')
 
 /**
  * @typedef {Object} Note
  * @property {string} item Some human-readable item identifier, provided by user
  * @property {string[]} tags Additions to DP timeline and/or to folksonomy
- * @property {number} sec Time of data acquisition, in seconds since UNIX epoch
+ * @property {number} [sec] Time of data acquisition, in seconds since UNIX epoch
+ * @property {string} tim Time of data acquisition, ISO 8601
  * @property {string} [note] Free-form text note about the `item`
  */
 
@@ -41,12 +40,15 @@ async function saveNotes (notes) {
   const notesᵈ = new yaml.Document (notes)
 
   if (notes.length != 0) {  // Document the database with YAML comments
-    /** @type {YAMLMap} */
-    const orderᵐ = notesᵈ.get (0, true)
+    const orderᵐ = /** @type {yaml.YAMLMap} */ (notesᵈ.get (0, true))
     orderᵐ.commentBefore = ' Array of notes, updated from acqui.js'
-    orderᵐ.get ('item', true) .commentBefore = ' Some human-readable item identifier, provided by user'
-    orderᵐ.get ('tags', true) .commentBefore = ' Additions to DP timeline and/or to folksonomy'
-    orderᵐ.get ('sec', true) .commentBefore = ' Time of data acquisition, in seconds since UNIX epoch'}
+    const comm = (name, comment) => {
+      const node = /** @type {yaml.Node} */ (orderᵐ.get (name, true))
+      if (node) node.commentBefore = comment}
+    comm ('item', ' Some human-readable item identifier, provided by user')
+    comm ('tags', ' Additions to DP timeline and/or to folksonomy')
+    comm ('tim', ' Time of data acquisition, ISO 8601')
+    comm ('sec', ' Time of data acquisition, in seconds since UNIX epoch')}
 
   const notesᵖ = HOME + '/notes.yaml'
   log (notesᵖ)
@@ -66,7 +68,7 @@ async function fileNote (item, tags, noteˢ) {
   const notes = await loadNotes()
 
   /** @type {Note} */
-  const note = {item: item, tags: [...tags], sec: Math.floor (Date.now() / 1000)}
+  const note = {item: item, tags: [...tags], tim: date.format (new Date(), iso8601m, true)}
   if (typeof noteˢ !== 'undefined') note.note = noteˢ
 
   notes.push (note)
