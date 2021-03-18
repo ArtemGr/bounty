@@ -1,0 +1,24 @@
+{
+  "name": "youtube",
+  "version": "1.0.0",
+  "description": "YouTube helpers",
+  "main": "grab-youtube-title.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArtemGr/bounty.git"
+  },
+  "contributors": [
+    "Artemciy"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ArtemGr/bounty/issues"
+  },
+  "homepage": "https://github.com/ArtemGr/bounty#readme",
+  "dependencies": {
+    "youtubei": "^0.0.1-rc.14"
+  }
+}
