@@ -6,9 +6,7 @@ var OAuth2 = google.auth.OAuth2;
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/youtube-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/youtube.readonly'];
-var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-  process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'youtube-nodejs-quickstart.json';
+var TOKEN_PATH = 'youtube-nodejs-quickstart.json';
 
 var videoLinks = process.argv.slice(2);
 
@@ -35,9 +33,9 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content) {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-  var clientSecret = credentials.web.client_secret;
-  var clientId = credentials.web.client_id;
-  var redirectUrl = credentials.web.redirect_uris[0];
+  const clientSecret = credentials.installed.client_secret
+  const clientId = credentials.installed.client_id
+  const redirectUrl = credentials.installed.redirect_uris[0]
   var oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
   // Check if we have previously stored a token.

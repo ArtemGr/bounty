@@ -1,0 +1,6 @@
+
+# nodejs
+node_modules
+
+# google secrets
+client_secret*.json

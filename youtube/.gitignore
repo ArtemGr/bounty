@@ -5,3 +5,6 @@
 
 # google secrets
 /client_secret*.json
+
+# prototype
+/youtube-nodejs-quickstart.json
