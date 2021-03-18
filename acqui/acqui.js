@@ -2,6 +2,7 @@
 
 const date = require ('date-and-time');  // https://www.npmjs.com/package/date-and-time
 const fs = require ('fs'); const fsp = fs.promises;
+const LinkedHashMap = require ('@mootable/hashmap') .LinkedHashMap;
 const os = require ('os');
 // https://nodejs.org/dist/latest-v15.x/docs/api/readline.html
 const readline = require ('readline');
@@ -28,7 +29,7 @@ async function loadNotes() {
   // cf. https://stackoverflow.com/questions/14391690/how-to-capture-no-file-for-fs-readfilesync
   let notesˢ
   try {
-    notesˢ = await fsp.readFile (HOME + '/notes.yaml', 'utf8')
+    notesˢ = await fsp.readFile (HOME + '/notes.yaml', {encoding: 'utf8'})
   } catch (err) {
     if (err.code == 'ENOENT') notesˢ = '[]'
     else throw err}
@@ -84,15 +85,22 @@ async function fileNote (item, tags, noteˢ) {
   log ('Loading timeline…')
   const timelineᵖ = fs.existsSync (HOME + '/timeline') ? HOME + '/timeline' : HOME + '/Downloads/timeline';
   const timeline = await fsp.readFile (timelineᵖ, {encoding: 'utf8'})
-  let ca, re = /(20\d{12}):\s(\[[\w,]+\]\s)?(.*?)(?=\n20\d{12}|\n$|$)/g, lines = new Set()
-  while (ca = re.exec (timeline)) lines.add (ca[3])
+  let ca, re = /(20\d{12}):\s(\[[\w,]+\]\s)?(.*?)(?=\n20\d{12}|\n$|$)/g, caᵃ = []
+  while (ca = re.exec (timeline)) caᵃ.push (ca[3])
+  // If we have an item “foo” at the beginning and at the end of the timeline
+  // the linked map will only remember the beginning position and not the end one (FIFO),
+  // hence to order the hints by recency we should reverse them before deduplication
+  caᵃ.reverse()
+  const items = new LinkedHashMap(), itemsᵃ = /** @type {string[]} */ ([])
+  for (const item of caᵃ) items.set (item, 0)
+  for (const [key, _val] of items) itemsᵃ.push (key)
 
   term ('> ')  // PS2
   // https://github.com/cronvel/terminal-kit/blob/master/doc/high-level.md#ref.inputField
   let line = await term.inputField ({
     cancelable: true,
-    history: [...lines],  // For UP and DOWN
-    autoComplete: [...lines],
+    history: itemsᵃ,  // For UP and DOWN
+    autoComplete: itemsᵃ,
     autoCompleteHint: true,
     // What we had in mind is `singleColumnMenu` appearing preemptively,
     // with elements to be picked through the use of some special shortcuts,
