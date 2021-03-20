@@ -2,7 +2,6 @@
 
 const date = require ('date-and-time');  // https://www.npmjs.com/package/date-and-time
 const fs = require ('fs'); const fsp = fs.promises;
-const LinkedHashMap = require ('@mootable/hashmap') .LinkedHashMap;
 const os = require ('os');
 // https://nodejs.org/dist/latest-v15.x/docs/api/readline.html
 const readline = require ('readline');
@@ -90,9 +89,8 @@ async function fileNote (item, tags, noteˢ) {
   // If we have an item “foo” at the beginning and at the end of the timeline
   // the linked map will only remember the beginning position and not the end one (FIFO),
   // hence to order the hints by recency we should reverse them before deduplication
-  caᵃ.reverse()
-  const items = new LinkedHashMap(), itemsᵃ = /** @type {string[]} */ ([])
-  for (const item of caᵃ) items.set (item, 0)
+  const items = new Map(), itemsᵃ = /** @type {string[]} */ ([])
+  for (let ix = caᵃ.length - 1; ix >= 0; --ix) items.set (caᵃ[ix], 0)
   for (const [key, _val] of items) itemsᵃ.push (key)
 
   term ('> ')  // PS2

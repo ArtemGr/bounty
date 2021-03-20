@@ -43,7 +43,8 @@
 ## ideas around the “my net” toolbox
 
 * Offline-first. The code (application, toolbox) should help me with networks (clients, developers, providers, products) even without the internet. The information I enter should be useful first and foremost to myself. That way, if I decide to share it, the information will be truthful and hence also the information I'm getting from others.  
-(Compatible with [Syntropy](https://youtu.be/gSPNRu4ZPvE), the argoforestry metaphor?)
+(Compatible with [Syntropy](https://youtu.be/gSPNRu4ZPvE), the argoforestry metaphor?)  
+(Compatible with [Designed to Last](https://jeffhuang.com/designed_to_last/)?)
 
 Folksonomies are immediately useful as a way to retain information, to counter and/or detect eventual Transference, to guide simplifications. This might not be obvious.
 
