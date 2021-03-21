@@ -20,6 +20,6 @@ let binprint = (bin, blank = '.') => {
       );
   }
   let blankCode = blank.charCodeAt(0);
-  let printableArray = binArray.map((code) => code < 0x20 || code > 0x7F ? blankCode : code);
+  let printableArray = binArray.map((code) => code < 0x20 || code >= 0x7F ? blankCode : code);
   return String.fromCharCode(... printableArray);
 };
