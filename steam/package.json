@@ -4,7 +4,7 @@
   "description": "Steam helpers",
   "main": "steam.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node -e \"require('./steam.js').test()\""
   },
   "repository": {
     "type": "git",
@@ -17,8 +17,9 @@
   "bugs": {
     "url": "https://github.com/ArtemGr/bounty/issues"
   },
-  "homepage": "https://github.com/ArtemGr/bounty/tree/main/steam#readme",
+  "homepage": "https://github.com/ArtemGr/bounty/tree/main/steam",
   "dependencies": {
+    "knuth-shuffle": "github:Daplie/knuth-shuffle",
     "log": "gist:25fad725870b0ada74df2bce7d115cc1",
     "playwright-webkit": "^1.10.0"
   }
