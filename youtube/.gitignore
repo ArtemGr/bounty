@@ -1,0 +1,10 @@
+
+# nodejs
+/node_modules
+/package-lock.json
+
+# google secrets
+/client_secret*.json
+
+# prototype
+/youtube-nodejs-quickstart.json

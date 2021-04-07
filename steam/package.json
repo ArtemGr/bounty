@@ -1,0 +1,27 @@
+{
+  "name": "steam",
+  "version": "1.0.0",
+  "description": "Steam helpers",
+  "main": "steam.js",
+  "scripts": {
+    "test": "node -e \"require('./steam.js').test()\"",
+    "help": "node steam.js --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArtemGr/bounty.git"
+  },
+  "contributors": [
+    "Artemciy"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ArtemGr/bounty/issues"
+  },
+  "homepage": "https://github.com/ArtemGr/bounty/tree/main/steam",
+  "dependencies": {
+    "knuth-shuffle": "github:Daplie/knuth-shuffle",
+    "log": "gist:25fad725870b0ada74df2bce7d115cc1",
+    "playwright-webkit": "^1.10.0"
+  }
+}

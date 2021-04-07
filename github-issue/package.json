@@ -1,0 +1,23 @@
+{
+  "name": "gitissue-script",
+  "version": "1.0.0",
+  "description": "gitissue-script",
+  "main": "index.js",
+  "scripts": {
+    "create": "node create-issue.js",
+    "update": "node change-issue-body.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "contributors": [
+    "Artemciy"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArtemGr/bounty.git",
+    "directory": "gitissue-script"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "octonode": "^0.10.0"
+  }
+}

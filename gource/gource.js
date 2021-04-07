@@ -6,34 +6,29 @@ const fs = require('fs')
 // ( cf. https://github.com/ArtemGr/bounty/runs/1832745746 )
 // we should account for that and retry a number of times
 
-function runGourceCommand(
-  fileName,
-  options = {
-    RES_PARAM: '1280x720',
-    LIB_PARAM: 'libx264',
-  },
-) {
-  const fileCommand = fs.readFileSync(`./scripts/${fileName}`)
+const asyncExec = cmd => {
+  return new Promise((resolve, reject) => {
+    exec(cmd, (err, stdout, stderr) => {
+      err ? reject(err) : resolve({ output: stderr || stdout, code: 0 })
+    })
+  })
+}
+
+const runGourceCommand = async (fileName, options = { RES_PARAM: '1280x720', LIB_PARAM: 'libx264' }) => {
   try {
-    let cmd = fileCommand.toString()
-    for (let key in options) {
+    const fileCommand = fs.readFileSync(`./scripts/${fileName}`).toString()
+    let cmd = fileCommand
+
+    for (const key in options) {
       cmd = cmd.replace(key, options[key])
     }
-    console.log('Command that is run -->', cmd)
 
-    const script = exec(cmd)
-    script.stdout.on('data', function (data) {
-      console.log(data.toString())
-    })
-    script.stderr.on('data', function (data) {
-      console.error(data.toString())
-    })
-    script.on('exit', function (code) {
-      console.log('program ended with code: ' + code)
-      return code
-    })
-  } catch (error) {
-    console.error(error)
+    const { output, code } = await asyncExec(cmd)
+    return code
+
+  } catch (err) {
+    console.log(err);
+    console.log(`An error occured on command ${err.cmd}\nExited with status code ${err.code}`)
     return false
   }
 }
