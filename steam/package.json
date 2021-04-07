@@ -4,7 +4,8 @@
   "description": "Steam helpers",
   "main": "steam.js",
   "scripts": {
-    "test": "node -e \"require('./steam.js').test()\""
+    "test": "node -e \"require('./steam.js').test()\"",
+    "help": "node steam.js --help"
   },
   "repository": {
     "type": "git",
