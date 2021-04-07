@@ -6,6 +6,7 @@
 // ⌥ scrape game statistics (“hrs” and “last played”) from https://steamcommunity.com/id/${userId}/
 // ⌥ shuffle from YAML
 
+const {assert} = require ('console');
 const fs = require ('fs');
 const fsp = fs.promises;
 const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
@@ -15,21 +16,26 @@ const {webkit, Page} = require ('playwright-webkit');
 
 class Game {
   /**
-   * @param {string} id
+   * @param {number} id
    * @param {string} name
    */
   constructor (id, name) {
-    /** @type {string} */
+    /** @type {number} */
     this.id = id
     /** @type {string} */
     this.name = name}}
 
 exports.Game = Game
 
-async function games (contextDir, headless, userId) {
+/**
+ * @param {string} webkitDir For browser cache and cookies
+ * @param {boolean} headless
+ * @param {string} userId
+ */
+exports.games = async function (webkitDir, headless, userId) {
   const args = []
   // Persistent context allows for caching and authentication
-  const context = await webkit.launchPersistentContext (contextDir, {
+  const context = await webkit.launchPersistentContext (webkitDir, {
     headless: headless,
     args: args,
     slowMo: 314,
@@ -58,7 +64,7 @@ async function games (contextDir, headless, userId) {
     const idʹ = await (await row.getProperty ('id')) .jsonValue()
     const idˀ = /game_(\d+)/ .exec (idʹ)
     if (!idˀ || idˀ.length != 2) throw new Error (`!id: ${idʹ}`)
-    const id = idˀ[1]
+    const id = parseInt (idˀ[1])
 
     const _img = `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/capsule_184x69.jpg`
 
@@ -67,8 +73,18 @@ async function games (contextDir, headless, userId) {
   await context.close()
   return games}
 
-exports.test = function() {
-  log ('test')}
+async function pickWebkitDir() {
+  const webkitDir = process.env['STEAM_WEBKIT'] ?? os.homedir() + '/.webkit'
+  if (!fs.existsSync (webkitDir)) {await fsp.mkdir (webkitDir, 0o700)}
+  await fsp.access (webkitDir)
+  return webkitDir}
+
+exports.test = async function() {
+  const webkitDir = await pickWebkitDir();
+  const games = await exports.games (webkitDir, true, 'bar')
+  const braid = games.find (g => g.name == 'Braid')
+  assert (braid && braid.id == 26800)
+  log (`${games.length} games, Braid is ${braid.id}`)}
 
 function help() {
   console.log ('npm i && node steam.js $STEAM_USERID')}
@@ -78,10 +94,7 @@ function help() {
 if (require.main === module) (async () => {
   if (process.argv.includes ('--help')) {help(); return}
 
-  const contextDir = process.env['STEAM_WEBKIT'] ?? os.homedir() + '/.webkit'
-  if (!fs.existsSync (contextDir)) {await fsp.mkdir (contextDir, 0o700)}
-  await fsp.access (contextDir)
-
+  const webkitDir = await pickWebkitDir();
   const headless = (process.env['STEAM_HEADLESS'] ?? '0') == '1' || process.argv.includes ('--headless')
 
   let userId = process.env['STEAM_USERID']
@@ -91,19 +104,19 @@ if (require.main === module) (async () => {
     if (/^\w+$/ .test (last)) userId = last}
   if (userId == null) throw new Error ('!STEAM_USERID')
 
-  const gamesᵃ = await games (contextDir, headless, userId)
+  const games = await exports.games (webkitDir, headless, userId)
 
   const shuffleʹ = process.env['STEAM_SHUFFLE']
   const shuffle = shuffleʹ ? parseInt (shuffleʹ) : (process.argv.includes ('--shuffle') ? 9 : 0)
 
   if (shuffle) {
-    knuthShuffle (gamesᵃ)
-    const gamesˢ = gamesᵃ.slice (0, shuffle)
+    knuthShuffle (games)
+    const gamesˢ = games.slice (0, shuffle)
     for (let ix = 0; ix < gamesˢ.length; ++ix) {
       const game = gamesˢ[ix]
       console.log (game.id, game.name)}
   } else {
-    for (let ix = 0; ix < gamesᵃ.length; ++ix) {
-      const game = gamesᵃ[ix]
+    for (let ix = 0; ix < games.length; ++ix) {
+      const game = games[ix]
       console.log (game.id, game.name)}}
 })()
