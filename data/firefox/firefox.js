@@ -42,9 +42,18 @@ exports.profiles = async function() {
 exports.tabs = async function() {
   const profiles = await exports.profiles()
   const profilesʹ = await fsp.readdir (profiles)
-  log (profilesʹ)
 
-  // ⌥ sort the profiles by last-modified, in order to pick the recent/actual one
+  // Sort the profiles by last-modified, in order to pick the recent/actual one
+  const lm = /** @type {Map<String, number>} */ (new Map())
+  const lmᶠ = /** @param {string} fname */ fname => {
+    let ms = lm.get (fname)
+    if (!ms) {
+      const stat = fs.statSync (`${profiles}/${fname}`)
+      const backups = fs.existsSync (`${profiles}/${fname}/sessionstore-backups`)
+      ms = stat.isDirectory() && backups ? stat.mtimeMs : -1
+      lm.set (fname, ms)}
+    return ms}
+  profilesʹ.sort ((a, b) => lmᶠ (b) - lmᶠ (a))
 
   return []}
 
