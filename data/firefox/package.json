@@ -21,6 +21,7 @@
   "homepage": "https://github.com/ArtemGr/bounty/tree/main/data/firefox",
   "dependencies": {
     "knuth-shuffle": "github:Daplie/knuth-shuffle",
-    "log": "gist:25fad725870b0ada74df2bce7d115cc1"
+    "log": "gist:25fad725870b0ada74df2bce7d115cc1",
+    "lz4": "^0.6.5"
   }
 }
