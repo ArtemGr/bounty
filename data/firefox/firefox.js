@@ -34,12 +34,16 @@ exports.saveTabs = async function (tabs) {
 
   if (tabs.length != 0) {  // Document the database with YAML comments
     const tabᵐ = /** @type {yaml.YAMLMap} */ (tabsᵈ.get (0, true))
-    tabᵐ.commentBefore = ' Comment 1'
+    tabᵐ.commentBefore = ' Tabs gathered from the Firefox “recovery.jsonlz4”'
+      + '\n Moving them into a separate database allows us to close the tabs in the browser'
+      + '\n and work from a clean slate there.'
+      + '\n We can also shuffle the saved tabs and mix them with other tasks.'
+      + '\n '
     const comm = (name, comment) => {
       const node = /** @type {yaml.Node} */ (tabᵐ.get (name, true))
       if (node) node.commentBefore = comment}
-    comm ('url', ' When created; ISO 8601')
-    comm ('title', ' In forex, the base currency represents')}
+    comm ('url', ' The latest address we\'ve got for a tab')
+    comm ('title', ' As obtained from the session JSON')}
 
   const tabsᵖ = os.homedir() + '/.path/tabs.yaml'
   const tabsᵗ = tabsᵖ + '.' + Date.now() + '.tmp'
