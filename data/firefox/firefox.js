@@ -1,25 +1,50 @@
 //@ts-check
 
-// ⌥ save to commented YAML
-
 const {assert} = require ('console');
 const date = require ('date-and-time');
 const fs = require ('fs');
 const fsp = fs.promises;
+const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
 const lz4 = require ('lz4');
 const {log, snooze} = require ('log');
 const os = require ('os');
-const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
+const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 
-class Tab {
-  /**
-   * @param {string} url
-   */
-  constructor (url) {
-    /** @type {string} */
-    this.url = url}}
+/**
+ * @typedef {Object} Tab
+ * @property {string} url The latest address we've got for a tab
+ * @property {string} title As obtained from the session JSON
+ */
 
-exports.Tab = Tab
+/** @returns {Promise<Tab[]>} Loaded from “~/.path/tabs.yaml” */
+exports.loadTabs = async function() {
+  // cf. https://stackoverflow.com/questions/14391690/how-to-capture-no-file-for-fs-readfilesync
+  let tabsˢ
+  try {
+    tabsˢ = await fsp.readFile (os.homedir() + '/.path/tabs.yaml', {encoding: 'utf8'})
+  } catch (err) {
+    if (err.code == 'ENOENT') tabsˢ = '[]'
+    else throw err}
+  if (tabsˢ === '') tabsˢ = '[]'
+  return yaml.parse (tabsˢ)}
+
+/** @param {Tab[]} tabs For “~/.path/tabs.yaml” */
+exports.saveTabs = async function (tabs) {
+  const tabsᵈ = new yaml.Document (tabs)
+
+  if (tabs.length != 0) {  // Document the database with YAML comments
+    const tabᵐ = /** @type {yaml.YAMLMap} */ (tabsᵈ.get (0, true))
+    tabᵐ.commentBefore = ' Comment 1'
+    const comm = (name, comment) => {
+      const node = /** @type {yaml.Node} */ (tabᵐ.get (name, true))
+      if (node) node.commentBefore = comment}
+    comm ('url', ' When created; ISO 8601')
+    comm ('title', ' In forex, the base currency represents')}
+
+  const tabsᵖ = os.homedir() + '/.path/tabs.yaml'
+  const tabsᵗ = tabsᵖ + '.' + Date.now() + '.tmp'
+  await fsp.writeFile (tabsᵗ, tabsᵈ.toString())
+  await fsp.rename (tabsᵗ, tabsᵖ)}
 
 const win = process.platform == 'win32'
 
@@ -60,7 +85,6 @@ exports.tabs = async function() {
 
   const pname = profilesʹ[0]
   const recoveryᵖ = `${profiles}/${pname}/sessionstore-backups/recovery.jsonlz4`
-  log (recoveryᵖ)
   const lz4bytes = await fsp.readFile (recoveryᵖ)
   // cf. https://github.com/toashd/mozlz4/blob/d94719e5bae9e9dbd3e64847f91ab61e8646ad8d/index.js#L30
   const magic = 'mozLz40\0'
@@ -82,19 +106,26 @@ exports.tabs = async function() {
   // ⌥ refactor unpacking into a separate function invocable with “node -e”
   //await fsp.writeFile (path + '/fireforx-recovery.json', JSON.stringify (recovery, null, 2))
 
-  const urls = []
+  const tabs = await exports.loadTabs()
+  let newⁱ = 0, oldʲ = 0
   for (const window of recovery.windows) {
     for (const tab of window.tabs) {
       // Every tab has several history entries
       if (!tab.entries || !tab.entries.length) continue
       const entry = tab.entries[tab.entries.length-1]
-      urls.push ({url: entry.url, title: entry.title})}}
+      const have = tabs.find (t => t.url == entry.url)
+      if (have) {
+        ++oldʲ
+        have.title = entry.title
+      } else {
+        ++newⁱ
+        tabs.push ({url: entry.url, title: entry.title})}}}
 
   const lastUpdate = recovery.session.lastUpdate
   assert (lastUpdate > 1618299928626)
   const lastUpdateˢ = date.format (new Date (lastUpdate), 'YYYY-MM-DD HH:mm', false)
-  log (`Found “recovery.json” from ${lastUpdateˢ} with ${urls.length} urls`)
-  log (urls)
+  log (`Found “${recoveryᵖ}” from ${lastUpdateˢ} with ${newⁱ} new URLs and ${oldʲ} old`)
+  await exports.saveTabs (tabs)
 
   return []}
 

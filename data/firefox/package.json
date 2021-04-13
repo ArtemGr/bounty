@@ -23,6 +23,7 @@
     "date-and-time": "^1.0.0",
     "knuth-shuffle": "github:Daplie/knuth-shuffle",
     "log": "gist:25fad725870b0ada74df2bce7d115cc1",
-    "lz4": "^0.6.5"
+    "lz4": "^0.6.5",
+    "yaml": "^2.0.0-4"
   }
 }
