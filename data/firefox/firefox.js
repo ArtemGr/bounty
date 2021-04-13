@@ -3,6 +3,7 @@
 // ⌥ save to commented YAML
 
 const {assert} = require ('console');
+const date = require ('date-and-time');
 const fs = require ('fs');
 const fsp = fs.promises;
 const lz4 = require ('lz4');
@@ -67,10 +68,33 @@ exports.tabs = async function() {
   const lz4len = lz4bytes.readUInt32LE (8)  // bytes 8..12
   const lz4buf = Buffer.alloc (lz4len)
   const lz4lenʹ = lz4.decodeBlock (lz4bytes, lz4buf, 12)
-  assert (lz4len == lz4lenʹ)
+  assert (lz4lenʹ == lz4len && lz4len == lz4buf.length)
   const lz4str = new TextDecoder ('utf8') .decode (lz4buf)
   const recovery = JSON.parse (lz4str)
-  log (recovery)
+
+  // ⌥ configurable YAML location, env
+  const path = os.homedir() + '/.path'
+  if (!fs.existsSync (path)) await fsp.mkdir (path, 0o700)
+  // NB: Locally we keep the “tabs” separate from the “items” in “path”,
+  // for the sake of having a more readable YAML,
+  // but the two should also be compatible and synchronizable (a tab is a kind of path item)
+
+  // ⌥ refactor unpacking into a separate function invocable with “node -e”
+  //await fsp.writeFile (path + '/fireforx-recovery.json', JSON.stringify (recovery, null, 2))
+
+  const urls = []
+  for (const window of recovery.windows) {
+    for (const tab of window.tabs) {
+      // Every tab has several history entries
+      if (!tab.entries || !tab.entries.length) continue
+      const entry = tab.entries[tab.entries.length-1]
+      urls.push ({url: entry.url, title: entry.title})}}
+
+  const lastUpdate = recovery.session.lastUpdate
+  assert (lastUpdate > 1618299928626)
+  const lastUpdateˢ = date.format (new Date (lastUpdate), 'YYYY-MM-DD HH:mm', false)
+  log (`Found “recovery.json” from ${lastUpdateˢ} with ${urls.length} urls`)
+  log (urls)
 
   return []}
 
