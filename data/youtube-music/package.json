@@ -1,0 +1,29 @@
+{
+  "name": "youtube-music",
+  "version": "1.0.0",
+  "description": "YouTube Music helpers",
+  "main": "youtube-music.js",
+  "scripts": {
+    "test": "node -e \"require('./youtube-music.js').test()\"",
+    "help": "node youtube-music.js --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArtemGr/bounty.git"
+  },
+  "contributors": [
+    "Artemciy"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ArtemGr/bounty/issues"
+  },
+  "homepage": "https://github.com/ArtemGr/bounty/tree/main/data/youtube-music",
+  "dependencies": {
+    "date-and-time": "^1.0.0",
+    "knuth-shuffle": "github:Daplie/knuth-shuffle",
+    "log": "gist:25fad725870b0ada74df2bce7d115cc1",
+    "playwright-chromium": "^1.10.0",
+    "yaml": "^2.0.0-4"
+  }
+}

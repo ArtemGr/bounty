@@ -5,6 +5,8 @@
 // ⌥ scrape game statistics (“hrs” and “last played”) from https://steamcommunity.com/id/${userId}/
 // ⌥ shuffle from YAML
 // ⌥ look at https://github.com/waylonflinn/steam-community
+// ⌥ the option to visit a game page and grab the “11.8 hrs on record” there?
+// ⌥ track when a game has first appeared in the list and when it was removed (if it was)
 
 const {assert} = require ('console');
 const fs = require ('fs');
@@ -12,7 +14,6 @@ const fsp = fs.promises;
 const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
 const os = require ('os');
 const {log, snooze} = require ('log');
-// ⌥ see if we can run on “runkit.com” while using a plain “playwright”
 const {webkit, Page} = require ('playwright-webkit');
 
 class Game {
@@ -45,11 +46,11 @@ exports.games = async function (webkitDir, headless, userId) {
 
   const page = await context.newPage()
 
-  // Persistent context comes with a default page, let us discard it
-  for (const pageʹ of context.pages()) if (pageʹ != page) await pageʹ.close()
-
   // Closing the browser when the tab is closed *by the user* allows the program to exit then
   page.on ('close', () => {context.close()})
+
+  // Persistent context comes with a default page, let us discard it
+  for (const pageʹ of context.pages()) if (pageʹ != page) await pageʹ.close()
 
   await page.goto (`https://steamcommunity.com/id/${userId}/games/?tab=all`, {timeout: 99 * 1000})
 
@@ -134,7 +135,7 @@ if (require.main === module) (async () => {
     for (const game of games) {console.log (game.id, game.name)}
     return}
 
-  const webkitDir = await pickWebkitDir();
+  const webkitDir = await pickWebkitDir()
   const headless = (process.env['STEAM_HEADLESS'] ?? '0') == '1' || process.argv.includes ('--headless')
 
   let userId = process.env['STEAM_USERID']
