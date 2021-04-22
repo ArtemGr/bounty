@@ -5,3 +5,7 @@
 
 # google secrets
 /client_secret*.json
+/full-token.json
+
+# browser invocations
+/auth.url
