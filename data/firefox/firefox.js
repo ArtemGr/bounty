@@ -2,8 +2,7 @@
 
 const {assert} = require ('console');
 const date = require ('date-and-time');
-const fs = require ('fs');
-const fsp = fs.promises;
+const fs = require ('fs'); const fsp = fs.promises;
 const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
 const lz4 = require ('lz4');
 const {log, snooze} = require ('log');
@@ -108,7 +107,7 @@ exports.tabs = async function() {
   // but the two should also be compatible and synchronizable (a tab is a kind of path item)
 
   // ⌥ refactor unpacking into a separate function invocable with “node -e”
-  //await fsp.writeFile (path + '/fireforx-recovery.json', JSON.stringify (recovery, null, 2))
+  //await fsp.writeFile (path + '/firefox-recovery.json', JSON.stringify (recovery, null, 2))
 
   const tabs = await exports.loadTabs()
   let newⁱ = 0, oldʲ = 0
@@ -116,6 +115,9 @@ exports.tabs = async function() {
     for (const tab of window.tabs) {
       // Every tab has several history entries
       if (!tab.entries || !tab.entries.length) continue
+      // Skip pinned tabs
+      // Chance is that we don't want to close and offload them right now
+      if (tab.pinned) continue
       const entry = tab.entries[tab.entries.length-1]
       const have = tabs.find (t => t.url == entry.url)
       if (have) {
