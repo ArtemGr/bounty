@@ -1,0 +1,49 @@
+[package]
+name = "common-crawl"
+version = "0.1.0"
+authors = [
+  "Artemciy <artemciy@gmail.com>"
+]
+edition = "2018"
+
+[profile.dev]
+# Debug information turned off in order to speed up the rust-analyzer loop,
+# https://github.com/rust-analyzer/rust-analyzer/issues/1987
+debug = false
+
+[profile.dev.package."*"]
+debug = false
+# Might speed up the tests and reduce the size of the “dev” builds
+opt-level = 2
+
+[[bin]]
+name = "common-crawl"
+path = "common-crawl.rs"
+test = false
+doctest = false
+bench = false
+doc = false
+
+[dependencies]
+attohttpc = {version = "0.17", default-features = false, features = ["json", "tls-rustls"]}
+  http = "*"
+
+chrono = "0.4"
+crossterm = "0.18"
+fomat-macros = "0.3"
+#glob = "0.3"
+gstuff = {version = "0.7", path = "../../../gstuff.rs", features = ["nightly", "crossterm", "rdtsc"]}
+#indexmap = {version = "1", features = ["serde-1"]}
+#inlinable_string = {version = "0.1", features = ["serde"]}
+#nom = "6"
+#once_cell = {version = "1", features = ["parking_lot"]}
+#parking_lot = {version = "0.11", features = ["nightly"]}
+#pico-args = "0.3"
+#rand = {version = "0.8", features = ["small_rng"]}
+
+#ringbuf = "0.2"
+#serde = {version = "1", features = ["rc"]}
+#serde_derive = "1"
+# preserve_order switches to IndexMap: faster and preserves swap step order
+#serde_json = {version = "1", features = ["preserve_order", "raw_value"]}
+#serde_yaml = "0.8"
