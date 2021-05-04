@@ -154,7 +154,9 @@ async function pocUpdate() {
 
   log (fid)
   log (`https://drive.google.com/uc?id=${fid}`)  // Direct video stream
-  log (rc.data.webViewLink)}
+  log (rc.data.webViewLink)
+
+  process.exit (0)}
 
 async function clean() {
   const rm = async name => {if (name && fs.existsSync (name)) await fsp.rm (name)}

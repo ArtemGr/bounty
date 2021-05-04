@@ -28,3 +28,13 @@ Place the obtained “client_secret_….json” into the “google-drive” fold
 # step two: generate tokens
 
 TBD
+
+# HTTP updates
+
+Note that, having the token, we can update the file without the library, using just the HTTP client.
+We can, for example, update the file using the cURL.
+
+    TOKEN=$(jql --raw-output '"access_token"' drive-file-token.json)
+    ID=$(curl -s -H "Authorization: Bearer $TOKEN" "https://www.googleapis.com/drive/v3/files?q=name='timeline.mp4'" | jql -r '"files".[0]"id"')
+
+    curl --upload-file timeline.mp4 -H "Authorization: Bearer $TOKEN" -X PATCH "https://www.googleapis.com/upload/drive/v3/files/$ID?uploadType=media"
