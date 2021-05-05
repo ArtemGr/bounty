@@ -85,7 +85,7 @@ def init(script, args):
     except (WrapScriptConfigNotFound, WrapScriptNotFound) as e:
         print(Fore.RED + e + Fore.RESET)
         return
-    exec_ = config["Wrap"]["exec"]
+    exec_ = config["Initialize"]["exec"]
 
     script = SimpleScript(script)
     script.initialize("{} {}".format(exec_, ' '.join(args)), cwd=script_dir)
