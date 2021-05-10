@@ -1,6 +1,5 @@
 //@ts-check
 
-// ⌥ save to commented YAML
 // ⌥ scrape wishlist
 // ⌥ scrape game statistics (“hrs” and “last played”) from https://steamcommunity.com/id/${userId}/
 // ⌥ shuffle from YAML
@@ -9,25 +8,19 @@
 // ⌥ track when a game has first appeared in the list and when it was removed (if it was)
 
 const {assert} = require ('console');
-const fs = require ('fs');
-const fsp = fs.promises;
+const fs = require ('fs'); const fsp = fs.promises;
 const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
 const os = require ('os');
 const {log, snooze} = require ('log');
 const {webkit, Page} = require ('playwright-webkit');
+const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 
-class Game {
-  /**
-   * @param {number} id
-   * @param {string} name
-   */
-  constructor (id, name) {
-    /** @type {number} */
-    this.id = id
-    /** @type {string} */
-    this.name = name}}
-
-exports.Game = Game
+/**
+ * @typedef {Object} Game
+ * @property {number} id Steam game $ID, as in `https://store.steampowered.com/app/$ID/`
+ * @property {string} name Game name, usually from a user profile
+ * @property {number} [first] Time in seconds when we first added the game to DB
+ */
 
 /**
  * @param {string} webkitDir For browser cache and cookies
@@ -71,7 +64,7 @@ exports.games = async function (webkitDir, headless, userId) {
 
     const _img = `https://cdn.cloudflare.steamstatic.com/steam/apps/${id}/capsule_184x69.jpg`
 
-    games.push (new Game (id, name))}
+    games.push ({id, name})}
 
   await context.close()
   return games}
@@ -81,6 +74,50 @@ async function pickWebkitDir() {
   if (!fs.existsSync (webkitDir)) {await fsp.mkdir (webkitDir, 0o700)}
   await fsp.access (webkitDir)
   return webkitDir}
+
+/** @returns {Promise<string>} Directory for YAML files; set with STEAM_DB env */
+exports.dbDir = async function() {
+  const dir = process.env ['STEAM_DB'] ?? (os.homedir() + '/.steam')
+  if (!fs.existsSync (dir)) throw new Error (`No such dir: ${dir}`)
+  return dir}
+
+/**
+ * Update the local database of games
+ * @param {string} userId The "bar" in "https://steamcommunity.com/id/bar/"
+ * @param {Game[]} fresh Fresh list of games
+ */
+exports.syncDb = async function (userId, fresh) {
+  const dbDir = await exports.dbDir()
+  const gamesᵖ = dbDir + '/games.' + userId + '.yaml'
+  const gamesˢ = fs.existsSync (gamesᵖ) ? await fsp.readFile (gamesᵖ, 'utf8') : '[]'
+  const games = /** @type {Game[]} */ (yaml.parse (gamesˢ))
+  const id2game = /** @type {Map<number, Game>} */ (new Map())
+  for (const game of games) id2game.set (game.id, game)
+  let now = Math.floor (Date.now() / 1000)
+  for (const game of fresh) {
+    const have = id2game.get (game.id)
+    if (have) {
+      have.name = game.name
+    } else {
+      game.first = now
+      games.push (game)}}
+
+  const gamesᵈ = new yaml.Document (games)
+  if (games.length) {
+    const gameᵐ = /** @type {yaml.YAMLMap} */ (gamesᵈ.get (0, true))
+    gameᵐ.commentBefore = ' Game entries obtained from Steam'
+      + '\n usually from a user profile, https://steamcommunity.com/id/$userId/games/?tab=all'
+    const comm = (name, comment) => {
+      const node = /** @type {yaml.Node} */ (gameᵐ.get (name, true))
+      if (node) node.commentBefore = comment}
+    comm ('id', ' Steam game $ID, as in https://store.steampowered.com/app/$ID/')
+    comm ('name', ' Game name, usually from a user profile')
+    comm ('first', ' Time in seconds when we first added the game to DB')}
+
+  const serialized = gamesᵈ.toString()
+  const gamesᵗ = gamesᵖ + '.' + Date.now() + '.tmp'
+  await fsp.writeFile (gamesᵗ, serialized)
+  await fsp.rename (gamesᵗ, gamesᵖ)}
 
 /**
  * @returns {Promise<Game[]>} Games listed locally in “steamapps”
@@ -104,7 +141,7 @@ exports.installed = async function() {
     const nameˀ = /"name"\s+"([^"]+)"/ .exec (manifestʹ)
     if (!nameˀ) continue
     const name = nameˀ[1]
-    games.push (new Game (id, name))}
+    games.push ({id, name})}
   return games}
 
 exports.test = async function() {
@@ -146,15 +183,12 @@ if (require.main === module) (async () => {
   if (userId == null) throw new Error ('!STEAM_USERID')
 
   const games = await exports.games (webkitDir, headless, userId)
+  await exports.syncDb (userId, games)
 
   if (shuffle) {
+    log (`${games.length} games`)
     knuthShuffle (games)
     const gamesˢ = games.slice (0, shuffle)
     for (let ix = 0; ix < gamesˢ.length; ++ix) {
       const game = gamesˢ[ix]
-      console.log (game.id, game.name)}
-  } else {
-    for (let ix = 0; ix < games.length; ++ix) {
-      const game = games[ix]
-      console.log (game.id, game.name)}}
-})()
+      console.log (game.id, game.name)}}})()

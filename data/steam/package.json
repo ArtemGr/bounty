@@ -22,6 +22,7 @@
   "dependencies": {
     "knuth-shuffle": "github:Daplie/knuth-shuffle",
     "log": "gist:25fad725870b0ada74df2bce7d115cc1",
-    "playwright-webkit": "^1.10.0"
+    "playwright-webkit": "^1.10.0",
+    "yaml": "^2.0.0-5"
   }
 }
