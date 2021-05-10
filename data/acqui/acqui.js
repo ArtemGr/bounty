@@ -1,8 +1,10 @@
 //@ts-check
 
+const {spawn} = require ('child_process');
 const date = require ('date-and-time');  // https://www.npmjs.com/package/date-and-time
 const fs = require ('fs'); const fsp = fs.promises;
 const os = require ('os');
+const psList = require ('ps-list');
 // https://nodejs.org/dist/latest-v15.x/docs/api/readline.html
 const readline = require ('readline');
 // https://github.com/cronvel/terminal-kit/blob/master/doc/documentation.md
@@ -12,6 +14,7 @@ const {log} = require ('log');
 const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 
 const HOME = os.homedir()
+const ACQUI_DB = process.env['ACQUI_DB']
 const iso8601m = date.compile ('YYYY-MM-DDTHH:mm[Z]')
 
 /**
@@ -28,7 +31,7 @@ async function loadNotes() {
   // cf. https://stackoverflow.com/questions/14391690/how-to-capture-no-file-for-fs-readfilesync
   let notesˢ
   try {
-    notesˢ = await fsp.readFile (HOME + '/notes.yaml', {encoding: 'utf8'})
+    notesˢ = await fsp.readFile (ACQUI_DB + '/notes.yaml', {encoding: 'utf8'})
   } catch (err) {
     if (err.code == 'ENOENT') notesˢ = '[]'
     else throw err}
@@ -50,7 +53,7 @@ async function saveNotes (notes) {
     comm ('tim', ' Time of data acquisition, ISO 8601')
     comm ('sec', ' Time of data acquisition, in seconds since UNIX epoch')}
 
-  const notesᵖ = HOME + '/notes.yaml'
+  const notesᵖ = ACQUI_DB + '/notes.yaml'
   log (notesᵖ)
   const notesᵗ = notesᵖ + '.' + Date.now() + '.tmp'
   await fsp.writeFile (notesᵗ, notesᵈ.toString())
@@ -74,6 +77,17 @@ async function fileNote (item, tags, noteˢ) {
   notes.push (note)
   await saveNotes (notes)}
 
+/** Syncthing can be installed with `pkg install syncthing` under Termux */
+async function startSyncthing() {
+  const pcs = await psList ({all: false})
+  for (const pc of pcs) if (pc.name == 'syncthing' || /^syncthing/.test (pc.cmd)) return
+  log ('Starting syncthing…')
+  const stlog = fs.createWriteStream (HOME + '/syncthing.log')
+  await new Promise (resolve => stlog.on ('open', resolve))
+  spawn ('syncthing',
+    ['--no-browser', '--no-restart', '--no-upgrade'],
+    {detached: true, stdio: [null, stlog, stlog]})}
+
 (async function() {
 
   const term = termkit.terminal
@@ -81,8 +95,12 @@ async function fileNote (item, tags, noteˢ) {
 
   term.windowTitle ('acquisition')
 
+  await startSyncthing()
+
   log ('Loading timeline…')
-  const timelineᵖ = fs.existsSync (HOME + '/timeline') ? HOME + '/timeline' : HOME + '/Downloads/timeline';
+  if (!ACQUI_DB) throw new Error ('!ACQUI_DB')
+  if (!(await fsp.stat (ACQUI_DB)).isDirectory()) throw new Error ('ACQUI_DB !dir')
+  const timelineᵖ = ACQUI_DB + '/timeline';
   const timeline = await fsp.readFile (timelineᵖ, {encoding: 'utf8'})
   let ca, re = /(20\d{12}):\s(\[[\w,]+\]\s)?(.*?)(?=\n20\d{12}|\n$|$)/g, caᵃ = []
   while (ca = re.exec (timeline)) caᵃ.push (ca[3])
