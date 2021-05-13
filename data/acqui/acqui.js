@@ -80,7 +80,9 @@ async function fileNote (item, tags, noteˢ) {
 /** Syncthing can be installed with `pkg install syncthing` under Termux */
 async function startSyncthing() {
   const pcs = await psList ({all: false})
-  for (const pc of pcs) if (pc.name == 'syncthing' || /^syncthing/.test (pc.cmd)) return
+  for (const pc of pcs)
+    if (pc.name == 'syncthing' || pc.name == 'syncthing.exe' || /^syncthing/.test (pc.cmd))
+      return
   log ('Starting syncthing…')
   const stlog = fs.createWriteStream (HOME + '/syncthing.log')
   await new Promise (resolve => stlog.on ('open', resolve))
