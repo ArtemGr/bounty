@@ -3,12 +3,12 @@
 #[macro_use] extern crate fomat_macros;
 #[macro_use] extern crate gstuff;
 
-use std::io::Read;
-
+use attohttpc::header::CONTENT_LENGTH;
 use chrono::{Local, TimeZone};
 use chrono::format::DelayedFormat;
 use chrono::format::strftime::StrftimeItems;
 use flate2::read::GzDecoder;
+use std::io::Read;
 
 macro_rules! status {($($args: tt)+) => {if *::gstuff::ISATTY {
   ::gstuff::status_line (file!(), line!(), fomat! ($($args)+))}}}
@@ -26,14 +26,35 @@ macro_rules! log {($($args: tt)+) => {{
 
 fn main() -> Result<(), String> {
   let pathsᵘ = "https://commoncrawl.s3.amazonaws.com/crawl-data/CC-MAIN-2021-10/warc.paths.gz";
-  status! ("Loading " (pathsᵘ) "…");
+  status! ("Loading " (pathsᵘ) '…');
   let rc = try_s! (attohttpc::get (pathsᵘ) .send());
   assert! (rc.headers().contains_key ("x-amz-storage-class"));
   assert! (rc.headers().contains_key ("etag"));
   assert! (rc.headers().get ("server") .map (|v| v.as_bytes() == b"AmazonS3") .unwrap_or (false));
   let pathsᵇ = try_s! (rc.bytes());
   let mut pathsᶻ = GzDecoder::new (&pathsᵇ[..]);
-  let mut paths = String::new();
+  let mut paths = String::with_capacity (8 * 1024 * 1024);
   try_s! (pathsᶻ.read_to_string (&mut paths));
-  log! ((paths));
+
+  // ⌥ track the downloads with a file
+
+  for path in paths.split ('\n') {
+    let url = fomat! ("https://commoncrawl.s3.amazonaws.com/" (path));
+    let mut rc = try_s! (attohttpc::get (url) .send());
+    let len = try_s! (rc.headers().get (CONTENT_LENGTH) .ok_or ("!CONTENT_LENGTH"));
+    let len = try_s! (len.to_str());
+    let len = try_s! (len.parse::<usize>());
+
+    let mut buf = [0u8; 65536];
+    let mut total = 0;
+    loop {
+      let got = try_s! (rc.read (&mut buf));
+      if got == 0 {break}
+      total += got}
+
+    assert_eq! (total, len);
+    log! ([len]);
+    break
+  }
+
   Ok(())}
