@@ -78,19 +78,22 @@ async function fileNote (item, tags, noteˢ) {
   notes.push (note)
   await saveNotes (notes)}
 
-/** Syncthing can be installed with `pkg install syncthing` under Termux */
+/** Syncthing can be installed with `pkg install syncthing` under Termux
+ * @returns {Promise<boolean>} True if Syncthing wasn't running */
 exports.startSyncthing = async function() {
   const pcs = await psList ({all: false})
   for (const pc of pcs)
     if (pc.name == 'syncthing' || pc.name == 'syncthing.exe' || /^syncthing/.test (pc.cmd))
-      return
+      return false
   log ('Starting syncthing…')
   const stlog = fs.createWriteStream (HOME + '/syncthing.log')
   await new Promise (resolve => stlog.on ('open', resolve))
   const args = ['--no-browser', '--no-restart', '--no-upgrade']
   if (win) args.push ('--no-console')
-  spawn ('syncthing', args,
-    {detached: true, stdio: [null, stlog, stlog]})}
+  const pc = spawn ('syncthing', args,
+    {detached: true, stdio: [null, stlog, stlog]})
+  pc.unref()
+  return true}
 
 // When invoked from console
 // cf. https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_accessing_the_main_module
