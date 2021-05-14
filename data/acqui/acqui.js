@@ -16,6 +16,7 @@ const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 const HOME = os.homedir()
 const ACQUI_DB = process.env['ACQUI_DB']
 const iso8601m = date.compile ('YYYY-MM-DDTHH:mm[Z]')
+const win = process.platform == 'win32'
 
 /**
  * @typedef {Object} Note
@@ -78,7 +79,7 @@ async function fileNote (item, tags, noteˢ) {
   await saveNotes (notes)}
 
 /** Syncthing can be installed with `pkg install syncthing` under Termux */
-async function startSyncthing() {
+exports.startSyncthing = async function() {
   const pcs = await psList ({all: false})
   for (const pc of pcs)
     if (pc.name == 'syncthing' || pc.name == 'syncthing.exe' || /^syncthing/.test (pc.cmd))
@@ -86,18 +87,21 @@ async function startSyncthing() {
   log ('Starting syncthing…')
   const stlog = fs.createWriteStream (HOME + '/syncthing.log')
   await new Promise (resolve => stlog.on ('open', resolve))
-  spawn ('syncthing',
-    ['--no-browser', '--no-restart', '--no-upgrade'],
+  const args = ['--no-browser', '--no-restart', '--no-upgrade']
+  if (win) args.push ('--no-console')
+  spawn ('syncthing', args,
     {detached: true, stdio: [null, stlog, stlog]})}
 
-(async function() {
+// When invoked from console
+// cf. https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_accessing_the_main_module
+if (require.main === module) (async function() {
 
   const term = termkit.terminal
   log.out = (line, loc) => {loc && term.gray (loc + '] '); term.gray (line); term ('\n')}
 
   term.windowTitle ('acquisition')
 
-  await startSyncthing()
+  await exports.startSyncthing()
 
   log ('Loading timeline…')
   if (!ACQUI_DB) throw new Error ('!ACQUI_DB')
