@@ -45,7 +45,10 @@ exports.games = async function (webkitDir, headless, userId) {
   // Persistent context comes with a default page, let us discard it
   for (const pageʹ of context.pages()) if (pageʹ != page) await pageʹ.close()
 
-  await page.goto (`https://steamcommunity.com/id/${userId}/games/?tab=all`, {timeout: 99 * 1000})
+  const url = /^\d+$/ .test (userId)
+    ? `https://steamcommunity.com/profiles/${userId}/games/?tab=all`
+    : `https://steamcommunity.com/id/${userId}/games/?tab=all`
+  await page.goto (url, {timeout: 99 * 1000})
 
   await page.waitForSelector ('div#gameslist_sort_options')  // Check head
   await page.waitForSelector ('div#footer', {state: 'attached'})  // Check tail
