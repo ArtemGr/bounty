@@ -10,13 +10,14 @@ const readline = require ('readline');
 // https://github.com/cronvel/terminal-kit/blob/master/doc/documentation.md
 // https://github.com/cronvel/terminal-kit/blob/master/doc/high-level.md
 const termkit = require ('terminal-kit');
-const {log} = require ('log');
+const {assert, log} = require ('log');
 const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 
 const HOME = os.homedir()
 const ACQUI_DB = process.env['ACQUI_DB']
 const iso8601m = date.compile ('YYYY-MM-DDTHH:mm[Z]')
 const win = process.platform == 'win32'
+const DIRECTIONS = ['fireworks', 'entropy', 'orientation', 'wellness']
 
 /**
  * @typedef {Object} Note
@@ -111,8 +112,48 @@ if (require.main === module) (async function() {
   if (!(await fsp.stat (ACQUI_DB)).isDirectory()) throw new Error ('ACQUI_DB !dir')
   const timelineᵖ = ACQUI_DB + '/timeline';
   const timeline = await fsp.readFile (timelineᵖ, {encoding: 'utf8'})
-  let ca, re = /(20\d{12}):\s(\[[\w,]+\]\s)?(.*?)(?=\n20\d{12}|\n$|$)/g, caᵃ = []
-  while (ca = re.exec (timeline)) caᵃ.push (ca[3])
+  const dp = /** @type {Map<string, number>} */ (new Map())
+  let ca, re = /(20\d{12}):\s(\[[\w,\ \.]+\]\s)?(.*?)(?=\n20\d{12}|\n$|$)/g, caᵃ = []
+  while (ca = re.exec (timeline)) {
+    caᵃ.push (ca[3])
+
+    // Parse the tags to calculate the direction points
+    if (ca[2] == null) continue  // No tags
+    const tagsʹ = /^\[(.*)\]\s?$/ .exec (ca[2])
+    assert (tagsʹ != null)
+    const tagsʺ = tagsʹ[1].split (/\,\s*/)
+    assert (tagsʺ.length != 0)
+    for (const tagⁱ of tagsʺ) {
+      const [tag, pointsˢ] = tagⁱ.split (/\s+/)
+      let points = 0.01
+      if (pointsˢ != null) {
+        assert (/^[\d\.]+$/ .test (pointsˢ))  // A number
+        points = parseFloat (pointsˢ)
+        assert (!isNaN (points))}
+
+      if (!DIRECTIONS.find (v => v == tag)) continue  // Not a DP direction
+
+      // Assign direction points
+      const prev = dp.get (tag) ?? 0
+      dp.set (tag, prev + points)
+
+      // Take `points` from other directions
+      // Advancing direction A takes from directions Dⱼ but allows them to take from A in turn;
+      // every direction is other directions reward
+      const sum = [...dp.values()].reduce ((a, b) => Math.max (0, a) + Math.max (0, b))
+      for (const [direction, dipo] of dp) {
+        if (direction == tag) continue
+        const take = points * (dipo / sum)
+        dp.set (direction, dipo - take)}}}
+
+  // Display the direction balance
+  for (const [direction, points] of dp) {
+    const pointsʹ = Math.round (points * 100) / 100
+    if (pointsʹ < 0.57721) term.green (`${direction} ${pointsʹ} `)
+    else if (pointsʹ < 1.2020569) term.yellow (`${direction} ${pointsʹ} `)
+    else term.red (`${direction} ${pointsʹ} `)}
+  console.log()
+
   // If we have an item “foo” at the beginning and at the end of the timeline
   // the linked map will only remember the beginning position and not the end one (FIFO),
   // hence to order the hints by recency we should reverse them before deduplication
@@ -144,7 +185,7 @@ if (require.main === module) (async function() {
   for (;;) {
     term ('\n> ')
     const tagsʰ = [
-      'fireworks', 'entropy', 'orientation', 'wellness',  // DP
+      ...DIRECTIONS,  // DP
       'family',
       'mv',
       'note']
