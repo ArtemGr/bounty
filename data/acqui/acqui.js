@@ -16,6 +16,7 @@ const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 const HOME = os.homedir()
 const ACQUI_DB = process.env['ACQUI_DB']
 const iso8601m = date.compile ('YYYY-MM-DDTHH:mm[Z]')
+const YMDHMS = date.compile ('YYYYMMDDHHmmss')
 const win = process.platform == 'win32'
 const DIRECTIONS = ['fireworks', 'entropy', 'orientation', 'wellness']
 
@@ -113,9 +114,13 @@ if (require.main === module) (async function() {
   const timelineᵖ = ACQUI_DB + '/timeline';
   const timeline = await fsp.readFile (timelineᵖ, {encoding: 'utf8'})
   const dp = /** @type {Map<string, number>} */ (new Map())
+  let lastPoint = /** @type {Date} */ (null)
   let ca, re = /(20\d{12}):\s(\[[\w,\ \.]+\]\s)?(.*?)(?=\n20\d{12}|\n$|$)/g, caᵃ = []
   while (ca = re.exec (timeline)) {
     caᵃ.push (ca[3])
+
+    const tim = date.parse (ca[1], YMDHMS, true)
+    assert (tim != null)
 
     // Parse the tags to calculate the direction points
     if (ca[2] == null) continue  // No tags
@@ -133,18 +138,26 @@ if (require.main === module) (async function() {
 
       if (!DIRECTIONS.find (v => v == tag)) continue  // Not a DP direction
 
+      // Find the time delta from the previous point
+      const tΔ = lastPoint ? Math.max (0, (tim.getTime() - lastPoint.getTime()) / 1000) : 0
+      lastPoint = tim
+
       // Assign direction points
       const prev = dp.get (tag) ?? 0
       dp.set (tag, prev + points)
 
       // Take `points` from other directions
-      // Advancing direction A takes from directions Dⱼ but allows them to take from A in turn;
+      // Advancing direction D takes from directions Dⱼ but allows them to take from D in turn;
       // every direction is other directions reward
       const sum = [...dp.values()].reduce ((a, b) => Math.max (0, a) + Math.max (0, b))
-      for (const [direction, dipo] of dp) {
-        if (direction == tag) continue
-        const take = points * (dipo / sum)
-        dp.set (direction, dipo - take)}}}
+      for (let [direction, dipo] of dp) {
+        if (direction == tag || !sum) continue
+        dipo -= points * (dipo / sum)
+        if (tΔ > 0) {
+          // Time takes points, making space for new achievements
+          const rest = tΔ / 86400 / 31
+          if (dipo > rest) dipo -= rest}
+        dp.set (direction, dipo)}}}
 
   // Display the direction balance
   for (const [direction, points] of dp) {
@@ -219,7 +232,7 @@ if (require.main === module) (async function() {
   term.column (1) .eraseLine()
 
   log (`Saving to “${timelineᵖ}”…`)
-  let tll = date.format (new Date(), 'YYYYMMDDHHmmss') + ':'
+  let tll = date.format (new Date(), YMDHMS) + ':'
   if (tags) tll += ' [' + [...tags].join (',') + ']'
   tll += ' ' + line + '\n'
   await fsp.appendFile (timelineᵖ, tll, {encoding: 'utf8'})
