@@ -128,6 +128,8 @@ if (require.main === module) (async function() {
     assert (tagsʹ != null)
     const tagsʺ = tagsʹ[1].split (/\,\s*/)
     assert (tagsʺ.length != 0)
+
+    const tagsˆ = /** @type {[String, number][]} */ ([])
     for (const tagⁱ of tagsʺ) {
       const [tag, pointsˢ] = tagⁱ.split (/\s+/)
       let points = 0.01
@@ -137,26 +139,31 @@ if (require.main === module) (async function() {
         assert (!isNaN (points))}
 
       if (!DIRECTIONS.find (v => v == tag)) continue  // Not a DP direction
+      tagsˆ.push ([tag, points])
 
+      // Assign direction points
+      const prev = dp.get (tag) ?? 0
+      dp.set (tag, prev + points)}
+
+    for (const [tag, points] of tagsˆ) {
       // Find the time delta from the previous point
       const tΔ = lastPoint ? Math.max (0, (tim.getTime() - lastPoint.getTime()) / 1000) : 0
       lastPoint = tim
 
-      // Assign direction points
-      const prev = dp.get (tag) ?? 0
-      dp.set (tag, prev + points)
-
       // Take `points` from other directions
       // Advancing direction D takes from directions Dⱼ but allows them to take from D in turn;
       // every direction is other directions reward
-      const sum = [...dp.values()].reduce ((a, b) => Math.max (0, a) + Math.max (0, b))
+      let sum = 0
+      for (const [t, p] of dp) if (!tagsˆ.find (tup => tup[0] == t)) sum += Math.max (0, p)
       for (let [direction, dipo] of dp) {
-        if (direction == tag || !sum) continue
-        dipo -= points * (dipo / sum)
+        if (tagsˆ.find (tup => tup[0] == direction)) continue
+        if (!sum) continue
+        const take = points * (dipo / sum)
+        if (take < dipo) dipo -= take
         if (tΔ > 0) {
           // Time takes points, making space for new achievements
-          const rest = tΔ / 86400 / 31
-          if (dipo > rest) dipo -= rest}
+          const rest = tΔ / 86400 / 7
+          if (rest < dipo) dipo -= rest}
         dp.set (direction, dipo)}}}
 
   // Display the direction balance
