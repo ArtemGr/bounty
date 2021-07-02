@@ -1,0 +1,29 @@
+{
+  "name": "avito",
+  "version": "1.0.0",
+  "description": "Avito helpers",
+  "main": "avito.js",
+  "scripts": {
+    "test": "node -e \"require('./avito.js').test()\"",
+    "help": "node avito.js --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArtemGr/bounty.git"
+  },
+  "contributors": [
+    "Artemciy"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ArtemGr/bounty/issues"
+  },
+  "homepage": "https://github.com/ArtemGr/bounty/tree/main/data/avito",
+  "dependencies": {
+    "date-and-time": "^1.0.0",
+    "knuth-shuffle": "^1.0.8",
+    "log": "gist:25fad725870b0ada74df2bce7d115cc1",
+    "playwright-chromium": "^1.10.0",
+    "yaml": "^2.0.0-4"
+  }
+}
