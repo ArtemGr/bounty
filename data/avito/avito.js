@@ -1,14 +1,24 @@
 //@ts-check
 
+// https://youtu.be/MJ_akYvnuGY avito 01
+
+// ⌥ manual avito.ru auth ⇒ failed with playwright
+// ⌥   switch to puppeteer
+// ⌥   try stealth from https://github.com/berstend/puppeteer-extra
+
 const {assert} = require ('console');
 const date = require ('date-and-time');
 const fs = require ('fs');
 const fsp = fs.promises;
 const {log, snooze} = require ('log');
 const os = require ('os');
-// NB: As of 2021-04 YouTube Music doesn't want to work with WebKit
 const {chromium} = require ('playwright-chromium');
 const yaml = require ('yaml');  // https://github.com/eemeli/yaml
+
+// https://github.com/berstend/puppeteer-extra/tree/108a5f2/packages/puppeteer-extra-plugin-stealth#usage
+const puppeteer = require ('puppeteer-extra');
+const StealthPlugin = require ('puppeteer-extra-plugin-stealth');
+puppeteer.use (StealthPlugin())
 
 async function pickChromeDir() {
   const chromeDir = process.env['AVITO_CHROME'] ?? os.homedir() + '/.chrome'
@@ -22,7 +32,7 @@ exports.test = async function() {
 function help() {
   console.log ('npm i && node avito.js --chats')}
 
-// When invoked from console, “npm i && node youtube-music.js --tracks”
+// When invoked from console, “npm i && node avito.js --chats”
 // cf. https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_accessing_the_main_module
 if (require.main === module) (async () => {
   if (process.argv.includes ('--help')) {help(); return}
@@ -36,7 +46,7 @@ if (require.main === module) (async () => {
     const context = await chromium.launchPersistentContext (chromeDir, {
       headless: headless,
       args: args,
-      viewport: {width: 800, height: 400}})
+      viewport: {width: 800, height: 700}})
 
     const page = await context.newPage()
 
