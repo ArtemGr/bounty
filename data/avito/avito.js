@@ -1,10 +1,11 @@
 //@ts-check
 
-// https://youtu.be/MJ_akYvnuGY avito 01
-
 // ⌥ manual avito.ru auth ⇒ failed with playwright
 // ⌥   switch to puppeteer
 // ⌥   try stealth from https://github.com/berstend/puppeteer-extra
+
+// https://youtu.be/MJ_akYvnuGY avito 01
+// https://youtu.be/rX5DiEZ4xG8 playwright exodus
 
 const {assert} = require ('console');
 const date = require ('date-and-time');

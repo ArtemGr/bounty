@@ -1,11 +1,12 @@
 {
-  "name": "youtube-music",
+  "name": "elm",
   "version": "1.0.0",
   "description": "YouTube Music helpers",
-  "main": "youtube-music.js",
+  "main": "elm.js",
+  "type": "module",
   "scripts": {
-    "test": "node -e \"require('./youtube-music.js').test()\"",
-    "help": "node youtube-music.js --help"
+    "test": "node -e \"require('./elm.js').test()\"",
+    "help": "node elm.js --help"
   },
   "repository": {
     "type": "git",
@@ -18,12 +19,11 @@
   "bugs": {
     "url": "https://github.com/ArtemGr/bounty/issues"
   },
-  "homepage": "https://github.com/ArtemGr/bounty/tree/main/data/youtube-music",
+  "homepage": "https://github.com/ArtemGr/bounty/tree/main/data/elm",
   "dependencies": {
+    "@tensorflow/tfjs-node": "3.7.0",
     "date-and-time": "^1.0.0",
     "knuth-shuffle": "^1.0.8",
-    "log": "gist:25fad725870b0ada74df2bce7d115cc1",
-    "playwright-chromium": "^1.10.0",
-    "yaml": "^2.0.0-4"
+    "log": "gist:25fad725870b0ada74df2bce7d115cc1"
   }
 }
