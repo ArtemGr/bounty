@@ -150,7 +150,7 @@ if (require.main === module) (async function() {
       const tΔ = lastPoint ? Math.max (0, (tim.getTime() - lastPoint.getTime()) / 1000) : 0
       lastPoint = tim
 
-      // Take `points` from other directions
+      // Take 2/3 of `points` from other directions
       // Advancing direction D takes from directions Dⱼ but allows them to take from D in turn;
       // every direction is other directions reward
       let sum = 0
@@ -158,7 +158,7 @@ if (require.main === module) (async function() {
       for (let [direction, dipo] of dp) {
         if (tagsˆ.find (tup => tup[0] == direction)) continue
         if (!sum) continue
-        const take = points * (dipo / sum)
+        const take = points * (dipo / sum) * .666
         if (take < dipo) dipo -= take
         if (tΔ > 0) {
           // Time takes points, making space for new achievements
