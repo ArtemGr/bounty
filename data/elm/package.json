@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/ArtemGr/bounty/tree/main/data/elm",
   "dependencies": {
-    "@tensorflow/tfjs-node": "3.8.0",
+    "@tensorflow/tfjs-node": "3.7.0",
     "date-and-time": "^1.0.0",
     "knuth-shuffle": "^1.0.8",
     "log": "gist:25fad725870b0ada74df2bce7d115cc1",

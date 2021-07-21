@@ -2,10 +2,15 @@
 
 // https://www.kaggle.com/robertbm/extreme-learning-machine-example
 
-// https://youtu.be/hqvAfLlmWw4 ES modules (in Russian)
-// 
+// https://youtu.be/oq3tq-0gxOs importing and loading MNIST
+// https://youtu.be/AhmSUmrAkeQ solving dependency duplication due to version mismatch
 
-//import * as tf from '@tensorflow/tfjs';
+// Note that in our “package.json” we should be using the same version of
+// “@tensorflow/tfjs-node” that the
+// https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/package.json
+// uses, otherwise we'll get the kind of “backend was already registered” warnings mentioned at
+// https://github.com/tensorflow/tfjs/issues/708#issuecomment-422923513
+import * as tf from '@tensorflow/tfjs';
 
 // https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/data.js
 import * as mnistʹ from 'tfjs-examples-mnist-node/data.js';
