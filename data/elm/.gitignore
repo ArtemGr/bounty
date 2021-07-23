@@ -2,4 +2,7 @@
 # nodejs
 /node_modules
 /package-lock.json
+
+# MNIST
 /*-ubyte
+/dump.ns

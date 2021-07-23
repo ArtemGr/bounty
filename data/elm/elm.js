@@ -5,39 +5,47 @@
 // https://youtu.be/oq3tq-0gxOs importing and loading MNIST
 // https://youtu.be/AhmSUmrAkeQ solving dependency duplication due to version mismatch
 
-// Note that in our “package.json” we should be using the same version of
-// “@tensorflow/tfjs-node” that the
-// https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/package.json
-// uses, otherwise we'll get the kind of “backend was already registered” warnings mentioned at
-// https://github.com/tensorflow/tfjs/issues/708#issuecomment-422923513
 import * as tf from '@tensorflow/tfjs';
+import crypto from 'crypto';
+import fs from 'fs'; const fsp = fs.promises;
+import {assert, log} from 'log';
 
-// https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/data.js
-import * as mnistʹ from 'tfjs-examples-mnist-node/data.js';
-import {log} from 'log';
-import fs from 'fs';
-const fsp = fs.promises;
+/** @param {fs.promises.FileHandle} dump */
+async function loadFloat (dump) {
+  const lenʹ = Buffer.alloc (4)
+  assert (4 == (await dump.read (lenʹ, 0, 4)) .bytesRead)
+  const len = lenʹ.readUInt32LE (0)
 
-async function loadMnist() {
-  // @ts-ignore
-  const mnist = /** @type {mnistʹ} */ (mnistʹ.default)
+  const buf = Buffer.alloc (len)
+  assert (len == (await dump.read (buf, 0, len)) .bytesRead)
+  const float = new Float32Array (buf.buffer)
+  const md5 = crypto.createHash ('md5') .update (float) .digest ('hex')
 
-  const data = await mnist.loadData()
-  log (data)
+  const ckbuf = Buffer.alloc (32)
+  assert (32 == (await dump.read (ckbuf, 0, 32)) .bytesRead)
+  assert (md5 == ckbuf.toString ('utf8'))
+
+  return float}
+
+async function tbd() {
+  const dump = await fsp.open ('dump.ns', 'r')
+  log (`Loading trainImagesData..`)
+  const trainImagesData = await loadFloat (dump)
+  log (`Loading trainLabelsData..`)
+  const trainLabelsData = await loadFloat (dump)
+  log (`Loading testImagesData..`)
+  const testImagesData = await loadFloat (dump)
+  log (`Loading testLabelsData..`)
+  const testLabelsData = await loadFloat (dump)
+  await dump.close()
+
+  // ⌥ Re-create the Tensor
 }
 
-async function clean() {
-  await fsp.unlink ('t10k-images-idx3-ubyte')
-  await fsp.unlink ('t10k-labels-idx1-ubyte')
-  await fsp.unlink ('train-images-idx3-ubyte')
-  await fsp.unlink ('train-labels-idx1-ubyte')}
-
 function help() {
-  console.log ('node elm.js --load-mnist')
-  console.log ('node elm.js --clean')}
+  console.log ('node elm.js --tbd')}
 
 (async () => {
   if (process.argv.includes ('--help')) {help(); return}
-  if (process.argv.includes ('--load-mnist')) {await loadMnist(); return}
-  if (process.argv.includes ('--clean')) {await clean(); return}
+  if (process.argv.includes ('--tbd')) {await tbd(); return}
 })()
