@@ -5,10 +5,25 @@
 // https://youtu.be/oq3tq-0gxOs importing and loading MNIST
 // https://youtu.be/AhmSUmrAkeQ solving dependency duplication due to version mismatch
 
-const tf = require ('@tensorflow/tfjs-node');
 const crypto = require ('crypto');
 const fs = require ('fs'); const fsp = fs.promises;
 const {assert, log} = require ('log');
+
+/** @returns {import ('@tensorflow/tfjs')} */
+function requireTensorFlow() {
+  try {
+    // @ts-ignore
+    return require ('@tensorflow/tfjs-node-gpu');
+  } catch (ex) {
+    log ('No GPU')
+    try {
+      // @ts-ignore
+      return require ('@tensorflow/tfjs-node')
+    } catch (ex) {
+      log ('No native')
+      return require ('@tensorflow/tfjs')}}}
+
+const tf = requireTensorFlow()
 
 // Hint to hide the “AVX2” warning, cf. https://stackoverflow.com/a/66071396/257568
 if (process.env ['TF_CPP_MIN_LOG_LEVEL'] == null) {
