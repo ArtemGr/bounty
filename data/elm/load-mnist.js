@@ -1,12 +1,22 @@
 // https://github.com/tensorflow/tfjs-examples/blob/master/mnist-node/data.js
-import * as mnistʹ from 'tfjs-examples-mnist-node/data.js';
-import crypto from 'crypto';
-import fs from 'fs'; const fsp = fs.promises;
-import {assert, log} from 'log';
+const mnistʹ = require ('tfjs-examples-mnist-node/data.js');
+const crypto = require ('crypto');
+const fs = require ('fs'); const fsp = fs.promises;
+const {assert, log} = require ('log');
+
+function dumpChunk (/** @type {fs.WriteStream} */ dump, /** @type {Uint8Array} */ chunk) {
+  const len = Buffer.allocUnsafe (4)
+  len.writeUInt32LE (chunk.byteLength, 0)
+  dump.write (new Uint8Array (len))
+
+  dump.write (chunk)
+
+  const md5 = crypto.createHash ('md5') .update (chunk) .digest ('hex')
+  assert (md5.length == 32)
+  dump.write (md5)}
 
 async function loadMnist() {
-  // @ts-ignore
-  const mnist = /** @type {mnistʹ} */ (mnistʹ.default)
+  const mnist = mnistʹ
 
   await mnist.loadData()
   const train = mnist.getTrainData()
@@ -16,34 +26,22 @@ async function loadMnist() {
 
   const trainImagesData = /** @type {Float32Array} */ (train.images.dataSync())
   log (`Dumping trainImagesData, ${Math.round (trainImagesData.byteLength / 1024 / 1024)} MiB..`)
-  const len = Buffer.allocUnsafe (4)
-  len.writeUInt32LE (trainImagesData.byteLength, 0)
-  dump.write (new Uint8Array (len))
-  dump.write (new Uint8Array (trainImagesData.buffer))
-  const md5 = crypto.createHash ('md5') .update (trainImagesData) .digest ('hex')
-  assert (md5.length == 32)
-  dump.write (md5)
+  const utf8 = new TextEncoder ('utf8')
+  dumpChunk (dump, new Uint8Array (utf8.encode (JSON.stringify (train.images.shape))))
+  dumpChunk (dump, new Uint8Array (trainImagesData.buffer))
 
   const trainLabelsData = train.labels.dataSync()
   log (`Dumping trainLabelsData, ${Math.round (trainLabelsData.byteLength / 1024 / 1024)} MiB..`)
-  len.writeUInt32LE (trainLabelsData.byteLength, 0)
-  dump.write (new Uint8Array (len))
-  dump.write (new Uint8Array (trainLabelsData.buffer))
-  dump.write (crypto.createHash ('md5') .update (trainLabelsData) .digest ('hex'))
+  dumpChunk (dump, new Uint8Array (trainLabelsData.buffer))
 
   const testImagesData = test.images.dataSync()
   log (`Dumping testImagesData, ${Math.round (testImagesData.byteLength / 1024 / 1024)} MiB..`)
-  len.writeUInt32LE (testImagesData.byteLength, 0)
-  dump.write (new Uint8Array (len))
-  dump.write (new Uint8Array (testImagesData.buffer))
-  dump.write (crypto.createHash ('md5') .update (testImagesData) .digest ('hex'))
+  dumpChunk (dump, new Uint8Array (utf8.encode (JSON.stringify (test.images.shape))))
+  dumpChunk (dump, new Uint8Array (testImagesData.buffer))
 
   const testLabelsData = test.labels.dataSync()
   log (`Dumping testLabelsData, ${Math.round (testLabelsData.byteLength / 1024 / 1024)} MiB..`)
-  len.writeUInt32LE (testLabelsData.byteLength, 0)
-  dump.write (new Uint8Array (len))
-  dump.write (new Uint8Array (testLabelsData.buffer))
-  dump.write (crypto.createHash ('md5') .update (testLabelsData) .digest ('hex'))
+  dumpChunk (dump, new Uint8Array (testLabelsData.buffer))
 
   const finish = new Promise ((resolve, reject) => {
     dump.on ('finish', resolve)
@@ -51,7 +49,7 @@ async function loadMnist() {
   dump.end()
   await finish
 
-  log (train.images)}
+  log (test.labels)}
 
 async function clean() {
   await fsp.unlink ('t10k-images-idx3-ubyte')

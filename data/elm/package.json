@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "YouTube Music helpers",
   "main": "elm.js",
-  "type": "module",
   "scripts": {
     "test": "node -e \"require('./elm.js').test()\"",
     "help": "node elm.js --help"
