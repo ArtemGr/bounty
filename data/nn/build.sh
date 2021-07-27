@@ -12,5 +12,3 @@ export RUSTFLAGS=-Ctarget-cpu=native
 set -ex
 
 cargo build --release
-
-target/release/nn
