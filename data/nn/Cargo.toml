@@ -1,0 +1,51 @@
+[package]
+name = "nn"
+version = "0.1.0"
+authors = [
+  "Artemciy <artemciy@gmail.com>"
+]
+edition = "2018"
+
+[profile.dev]
+# Debug information turned off in order to speed up the rust-analyzer loop,
+# https://github.com/rust-analyzer/rust-analyzer/issues/1987
+debug = false
+
+[profile.dev.package."*"]
+debug = false
+# Might speed up the tests and reduce the size of the “dev” builds
+opt-level = 2
+
+[profile.release]
+# https://rustwasm.github.io/book/reference/code-size.html
+lto = true
+opt-level = 's'
+
+[[bin]]
+name = "nn"
+path = "src/nn.rs"
+test = false
+doctest = false
+bench = false
+doc = false
+
+[dependencies]
+
+arrayfire = "3.8"
+chrono = "0.4"
+crossterm = "0.20"
+fomat-macros = "0.3"
+gstuff = {version = "0.7", features = ["nightly", "crossterm"]}
+indexmap = {version = "1", features = ["serde-1"]}
+inlinable_string = {version = "0.1", features = ["serde"]}
+once_cell = {version = "1", features = ["parking_lot"]}
+parking_lot = {version = "0.11", features = ["nightly"]}
+pico-args = "0.4"
+rand = {version = "0.8", features = ["small_rng"]}
+
+serde = {version = "1", features = ["rc"]}
+serde_derive = "1"
+# preserve_order switches to IndexMap
+serde_json = {version = "1", features = ["preserve_order", "raw_value"]}
+
+smallvec = {version = "1.4", features = ["serde", "const_generics", "union", "write"]}

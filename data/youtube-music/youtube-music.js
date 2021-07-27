@@ -66,7 +66,6 @@ async function pickChromeDir() {
  */
 exports.tracks = async function (chromeDir, headless, list) {
   const args = []
-  args.push ('--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36"')
   // Persistent context allows for caching and authentication
   const context = await chromium.launchPersistentContext (chromeDir, {
     headless: headless,
@@ -150,7 +149,7 @@ exports.tracks = async function (chromeDir, headless, list) {
   return tracks}
 
 exports.test = async function() {
-  const chromeDir = await pickChromeDir();
+  const chromeDir = await pickChromeDir()
   const tracks = await exports.tracks (chromeDir, true, 'PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG')
   assert (50 <= tracks.length && tracks.length <= 150)
   log (`${tracks.length} tracks`)}

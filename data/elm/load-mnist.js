@@ -52,6 +52,7 @@ async function loadMnist() {
   log (test.labels)}
 
 async function clean() {
+  await fsp.unlink ('dump.ns')
   await fsp.unlink ('t10k-images-idx3-ubyte')
   await fsp.unlink ('t10k-labels-idx1-ubyte')
   await fsp.unlink ('train-images-idx3-ubyte')

@@ -167,7 +167,7 @@ async function clean() {
 function help() {
   console.log ('npm i && node google-drive.js')
   console.log ('  --create  ..  Create a Google Drive file')
-  console.log ('  --update  ..  Update a created Google Drive file, TBD')
+  console.log ('  --update  ..  Update a created Google Drive file')
   console.log ('  --clean   ..  Remove secret and token files')}
 
 // When invoked from console, “npm i && node steam.js $STEAM_USERID”

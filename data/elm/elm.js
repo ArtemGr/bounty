@@ -5,6 +5,7 @@
 // https://youtu.be/oq3tq-0gxOs importing and loading MNIST
 // https://youtu.be/AhmSUmrAkeQ solving dependency duplication due to version mismatch
 // https://youtu.be/0mcyw5uapWc running tfjs-examples-mnist-node on copied tensors
+// https://youtu.be/dXRyUurAy3k is TensorFlow a good fit and why turn low level
 
 const crypto = require ('crypto');
 const fs = require ('fs'); const fsp = fs.promises;

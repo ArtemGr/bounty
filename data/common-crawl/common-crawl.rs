@@ -40,8 +40,6 @@ fn main() -> Result<(), String> {
   let mut paths = String::with_capacity (8 * 1024 * 1024);
   try_s! (pathsᶻ.read_to_string (&mut paths));
 
-  // ⌥ track the downloads with a file
-
   let home = try_s! (env::var ("HOME"));
   let mut ccdl = try_s! (fs::File::with_options()
     .append (true)
@@ -56,6 +54,18 @@ fn main() -> Result<(), String> {
     let len = try_s! (rc.headers().get (CONTENT_LENGTH) .ok_or ("!CONTENT_LENGTH"));
     let len = try_s! (len.to_str());
     let len = try_s! (len.parse::<usize>());
+
+    // ⌥ parse the outer layer of WARC
+
+    // WARC example: https://www.kaggle.com/gabrielaltay/common-crawl-news-2020011021203700310
+    // specification: http://archive-access.sourceforge.net/warc/warc_file_format-0.16.html
+    // CPP parser: https://seo-explorer.io/code/open-source/warc-parser-cpp
+    // Java parser? https://github.com/Smerity/cc-warc-examples
+    // go library/parser? https://github.com/wolfgangmeyers/go-warc
+
+    // Decided not to use the nom streaming because it might be a can of worms
+    // Next step: maintain a large in-memory buffer that we can parse in one step from the top;
+    // be ready to skip a part of the incoming HTTP stream when a WARC record doesn't fit the buffer
 
     let mut buf = [0u8; 65536];
     let mut total = 0;
