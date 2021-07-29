@@ -3,10 +3,14 @@
 use arrayfire::{Array, Dim4, MatProp, Seq, af_print, index, join_many, matmul, pinverse, randu, set_seed, sin};
 use crossterm::QueueableCommand;
 use crossterm::style::Color::{DarkGrey, DarkYellow};
-use gstuff::rdtsc;
+use fantoccini::{ClientBuilder, Locator};
+use gstuff::{rdtsc, slurp_prog};
+use regex::Regex;
 use serde_json as json;
+use std::process::{Command, Stdio};
 use std::{io::Write};
 
+/// Run a simple ELM, 123 to 321
 pub fn elm() -> Result<(), String> {
   log! (c DarkGrey, "Loading training x and test t…");
 
@@ -96,4 +100,34 @@ pub fn elm() -> Result<(), String> {
 
   // ⌥ calculate the loss and MSE
 
+  Ok(())}
+
+/// Experiment with ELM activations
+pub async fn elm_snake() -> Result<(), String> {
+  // Figure out the IP, in order to reach the Windows version of geckodriver from WSL2
+  let ipconfig = try_s! (slurp_prog ("/mnt/c/Windows/System32/ipconfig.exe"));
+  // NB: The active IP usually has the “Default Gateway” filled
+  let re = try_s! (Regex::new (r"\sIPv4 Address[\. ]+: ([\d\.]+)+\s+Subnet Mask[\. ]+: ([\d\.]+)\s+Default Gateway[\. ]+: ([\d\.]+)\s"));
+  let mut ip = None;
+  for ca in re.captures_iter (&ipconfig) {ip = Some (ca[1].to_string())}
+  let ip = try_s! (ip.ok_or ("Found no IP in ipconfig"));
+  log! (c DarkGrey, "IP: " (ip));
+  // Start geckodriver, WebDriver proxy for Firefox
+  let mut gecmd = try_s! (Command::new ("geckodriver.exe")
+    .arg ("--host") .arg (&ip)
+    .arg ("--port") .arg ("4444")
+    .stdout (Stdio::null())  // As of 2021-07 “inherit” would confuse WSL2 and/or bash readline
+    .stderr (Stdio::inherit())
+    .spawn());
+
+  let geurl = fomat! ("http://" (ip) ":4444");
+  let mut client = try_s! (ClientBuilder::native().connect (&geurl) .await);
+
+  try_s! (client.goto ("https://echarts.apache.org/examples/en/editor.html?c=simple-surface&gl=1") .await);
+
+  let mut code_panel = try_s! (client.wait_for_find (Locator::Id ("code-panel")) .await);
+  let textarea = try_s! (code_panel.find (Locator::Css ("textarea")) .await);
+  log! ([textarea]);
+
+  try_s! (gecmd.kill());  // Bye, geckodriver!
   Ok(())}

@@ -6,6 +6,7 @@
 #[macro_use] extern crate gstuff;
 //#[macro_use] extern crate serde_derive;
 
+use async_std::task;
 use chrono::{Local, TimeZone};
 use chrono::format::DelayedFormat;
 use chrono::format::strftime::StrftimeItems;
@@ -45,7 +46,8 @@ mod elm;
 fn help() -> Result<(), String> {
   pintln! ("--info … ArrayFire info");
   pintln! ("--mnist … Experiment with MNIST");
-  pintln! ("--elm … Experiment with ELM");
+  pintln! ("--elm … Run a simple ELM, 123 to 321");
+  pintln! ("--elm-snake … Experiment with ELM activations");
   Ok(())}
 
 fn main() -> Result<(), String> {
@@ -64,5 +66,8 @@ fn main() -> Result<(), String> {
 
   if args.contains ("--elm") {
     return elm::elm()}
+
+  if args.contains ("--elm-snake") {
+    return task::block_on (elm::elm_snake())}
 
   Ok(())}

@@ -17,9 +17,7 @@ debug = false
 opt-level = 2
 
 [profile.release]
-# https://rustwasm.github.io/book/reference/code-size.html
-lto = true
-opt-level = 's'
+lto = false
 
 [[bin]]
 name = "nn"
@@ -30,12 +28,13 @@ bench = false
 doc = false
 
 [dependencies]
+async-std = {version = "1", features = ["tokio1"]}
 attohttpc = {version = "0.17", default-features = false, features = ["json", "tls-rustls"]}
   http = "*"
-
 arrayfire = {version = "3.8", features = ["afserde"]}
 chrono = "0.4"
 crossterm = "0.20"
+fantoccini = "0.17.4"
 fomat-macros = "0.3"
 gstuff = {version = "0.7", features = ["nightly", "crossterm", "rdtsc"]}
 indexmap = {version = "1", features = ["serde-1"]}
@@ -44,6 +43,7 @@ once_cell = {version = "1", features = ["parking_lot"]}
 parking_lot = {version = "0.11", features = ["nightly"]}
 pico-args = "0.4"
 rand = {version = "0.8", features = ["small_rng"]}
+regex = "1"
 
 serde = {version = "1", features = ["rc"]}
 serde_derive = "1"
