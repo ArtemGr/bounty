@@ -1,6 +1,6 @@
 // ⌥ Investigate [pinned memory](https://groups.google.com/g/arrayfire-users/c/7BihnZ-J8ig)
 
-#![allow(unknown_lints, uncommon_codepoints)]
+#![allow(unknown_lints, uncommon_codepoints, mixed_script_confusables)]
 
 #[macro_use] extern crate fomat_macros;
 #[macro_use] extern crate gstuff;
@@ -40,10 +40,12 @@ macro_rules! log {
         $($args)+);})}};}
 
 mod mnist;
+mod elm;
 
 fn help() -> Result<(), String> {
   pintln! ("--info … ArrayFire info");
   pintln! ("--mnist … Experiment with MNIST");
+  pintln! ("--elm … Experiment with ELM");
   Ok(())}
 
 fn main() -> Result<(), String> {
@@ -59,5 +61,8 @@ fn main() -> Result<(), String> {
 
   if args.contains ("--mnist") {
     return mnist::mnist()}
+
+  if args.contains ("--elm") {
+    return elm::elm()}
 
   Ok(())}
