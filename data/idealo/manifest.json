@@ -1,0 +1,33 @@
+{
+  "description": "Crawl www.idealo.de in order to compare it with Common Crawl",
+  "manifest_version": 2,
+  "name": "idealo",
+  "version": "1.0",
+  "homepage_url": "https://github.com/ArtemGr/bounty/tree/main/data/idealo",
+  "icons": {
+  },
+
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "matches": [
+        "https://www.idealo.de/*",
+        "https://cdn.privacy-mgmt.com/index.html?message_id=*"
+      ],
+      "js": ["borderify.js"]
+    }
+  ],
+
+  "page_action": {
+    "default_icon": "icons/border-48.png"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ]
+}
