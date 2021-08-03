@@ -7,3 +7,7 @@ Crawl www.idealo.de in order to research intersections with Common Crawl
 
 ⌥ Cee if background (background.js) can change the URL of the page, in order to crawl
 
+## vlog (pomodoro screen video freelance)
+
+https://youtu.be/Jn7kWhN5s84 Нажимаем на голубую кнопку  
+https://youtu.be/2lhhDpkUmjU Гуляем до категорий  
