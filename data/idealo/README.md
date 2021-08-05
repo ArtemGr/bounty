@@ -11,3 +11,4 @@ Crawl www.idealo.de in order to research intersections with Common Crawl
 
 https://youtu.be/Jn7kWhN5s84 Нажимаем на голубую кнопку  
 https://youtu.be/2lhhDpkUmjU Гуляем до категорий  
+https://youtu.be/zmZngCq66tU Кликаем на категории  

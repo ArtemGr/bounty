@@ -7,6 +7,11 @@
   "icons": {
   },
 
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "idealo@idealo.de",
+      "strict_min_version": "1.0"}},
+
   "content_scripts": [
     {
       "all_frames": true,
@@ -28,6 +33,7 @@
 
   "permissions": [
     "activeTab",
-    "tabs"
+    "tabs",
+    "<all_urls>"
   ]
 }
