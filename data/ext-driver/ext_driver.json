@@ -1,0 +1,9 @@
+{
+  "name": "ext_driver",
+  "description": "Extension helper",
+  "path": "c:/spool/synced/projects/bounty/data/ext-driver/target/release/ext_driver.exe",
+  "type": "stdio",
+  "allowed_extensions": [
+    "idealo@idealo.de"
+  ]
+}

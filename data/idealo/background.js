@@ -5,6 +5,11 @@
 const tabs = browser.tabs
 
 async function parseCategories (/** @type {browser.tabs.Tab} */ tab) {
+  const msg = {foobar: 123}
+  const js = /** @type {any} */ (await browser.runtime.sendNativeMessage ('ext_driver', msg))
+  if (js.err) console.error (js.err); else console.info ('ext_driver]', js)
+  return
+
   for (let catNum = 0; catNum < 99; ++catNum) {
     console.log ('running script')
     await tabs.executeScript (tab.id, {file: 'parseCategories.js'})
