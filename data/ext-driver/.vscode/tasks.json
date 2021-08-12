@@ -7,6 +7,7 @@
       "type": "shell",
       "label": "build",
       "command": "cargo build --release",
+      //"command": "cargo test test_forward",
       "args": [
       ],
       "problemMatcher": [
