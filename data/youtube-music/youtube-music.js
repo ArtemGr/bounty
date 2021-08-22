@@ -17,8 +17,6 @@ const yaml = require ('yaml');  // https://github.com/eemeli/yaml
  * @property {string} title (Might be different from file “name”)
  * @property {string} author
  * @property {string} authorChan As in “https://music.youtube.com/channel/$authorChan”
- * @property {string} album
- * @property {string} albumChan As in “https://music.youtube.com/channel/$albumChan”
  */
 
 /** @returns {Promise<Track[]>} Loaded from “~/.path/ym-tracks.yaml” */
@@ -70,7 +68,7 @@ exports.tracks = async function (chromeDir, headless, list) {
   const context = await chromium.launchPersistentContext (chromeDir, {
     headless: headless,
     args: args,
-    viewport: {width: 800, height: 400}})
+    viewport: {width: 800, height: 600}})
 
   const page = await context.newPage()
 
@@ -81,9 +79,6 @@ exports.tracks = async function (chromeDir, headless, list) {
   for (const pageʹ of context.pages()) if (pageʹ != page) await pageʹ.close()
 
   await page.goto (`https://music.youtube.com/playlist?list=${list}`, {timeout: 66 * 1000})
-
-  // ⌥ handle or help with initial lack of authentication
-  // cf. https://www.reddit.com/r/node/comments/gw0chw/gmail_login_using_puppeteer/fsslbyt ?
 
   // NB: We can not sign in, says “This browser or app may not be secure”,
   // but public playlists should be available NP
@@ -103,10 +98,17 @@ exports.tracks = async function (chromeDir, headless, list) {
   // Scroll down until we get `nsongs` of `rows`
 
   let rows = []
+  const ys = []
   while (!rows.length || rows.length < nsongs - 1) {
+    rows = await page.$$ ('yt-formatted-string[title]>a[href*="watch?v="]')
+    //log (`got ${rows.length} out of ${nsongs - 1}`)
+    await page.keyboard.press ('PageDown')
     await snooze (31)
-    rows = await page.$$ ('yt-formatted-string[title]>a[href*="/watch?v="]')
-    if (rows.length) await rows[rows.length-1].scrollIntoViewIfNeeded()}
+    const y = await page.evaluate (() => {return window.scrollY})
+    assert (y > 0)
+    ys.push (y)
+    // Bail out if we're getting no further
+    if (31 < ys.length && ys .slice (-31) .every (p => p == ys[ys.length - 1])) break}
 
   // Find titles and IDs
 
@@ -121,28 +123,27 @@ exports.tracks = async function (chromeDir, headless, list) {
 
   // Find authors and albums
 
-  const channels = await page.$$ ('yt-formatted-string[title]>a[href*="/channel/"]')
-  assert (channels.length == rows.length * 2, `${channels.length}, ${rows.length}`)
+  const authors = [], authorChans = []
+  for (const row of rows) {
+    const id = 'i' + Math.ceil (Math.random() * Number.MAX_SAFE_INTEGER)
+    await row.evaluate ((node, id) => node.parentElement.parentElement.parentElement.id = id, id)
+    const parent = await page.$('css= div#' + id)
+    const channel = await parent.$ ('yt-formatted-string[title]>a[href*="channel/"]')
+    let author = null, authorChan = null
+    if (channel) {
+      const authorʰ = await (await channel.getProperty ('href')) .jsonValue()
+      author = await channel.evaluate (node => node.parentElement.title)
+      const authorᶜ = /\/channel\/([\w-]+)/ .exec (authorʰ)
+      authorChan = authorᶜ[1]}
+    authors.push (author), authorChans.push (authorChan)}
 
   const tracks = []
   for (let ix = 0; ix < rows.length; ++ix) {
-    const authorⁿ = channels [ix * 2]
-    const authorʰ = await (await authorⁿ.getProperty ('href')) .jsonValue()
-    const authorᵗ = await authorⁿ.evaluate (node => node.parentElement.title)
-    const authorᶜ = /\/channel\/([\w-]+)/ .exec (authorʰ)
-
-    const albumⁿ = channels [ix * 2 + 1]
-    const albumʰ = await (await albumⁿ.getProperty ('href')) .jsonValue()
-    const albumᵗ = await albumⁿ.evaluate (node => node.parentElement.title)
-    const albumᶜ = /\/channel\/([\w-]+)/ .exec (albumʰ)
-
     tracks.push ({
       id: ids[ix],
       title: titles[ix],
-      author: authorᵗ,
-      authorChan: authorᶜ[1],
-      album: albumᵗ,
-      albumChan: albumᶜ[1]})}
+      author: authors[ix],
+      authorChan: authorChans[ix]})}
 
   await page.close()
   await context.close()
