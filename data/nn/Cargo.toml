@@ -29,19 +29,20 @@ doc = false
 
 [dependencies]
 async-std = {version = "1", features = ["tokio1"]}
-attohttpc = {version = "0.17", default-features = false, features = ["json", "tls-rustls"]}
+attohttpc = {version = "0.18", default-features = false, features = ["json", "tls-rustls"]}
   http = "*"
-arrayfire = {version = "3.8", features = ["afserde"]}
+arrayfire = {version = "3", features = ["afserde"]}
 chrono = "0.4"
 crossterm = "0.20"
 fantoccini = "0.17.4"
 fomat-macros = "0.3"
-gstuff = {version = "0.7", features = ["nightly", "crossterm", "rdtsc"]}
+gstuff = {version = "0.7", features = ["nightly", "crossterm", "rdtsc", "re"]}
 indexmap = {version = "1", features = ["serde-1"]}
 inlinable_string = {version = "0.1", features = ["serde"]}
 once_cell = {version = "1", features = ["parking_lot"]}
 parking_lot = {version = "0.11", features = ["nightly"]}
 pico-args = "0.4"
+radiate = {version = "1", features = ["small-ids"]}
 rand = {version = "0.8", features = ["small_rng"]}
 regex = "1"
 

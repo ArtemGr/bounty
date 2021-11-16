@@ -12,6 +12,7 @@ use chrono::format::DelayedFormat;
 use chrono::format::strftime::StrftimeItems;
 use crossterm::QueueableCommand;
 use crossterm::style::Color::{Green};
+use gstuff::{re::Re};
 use pico_args::Arguments;
 use std::io::Write;
 //use std::thread;
@@ -41,16 +42,18 @@ macro_rules! log {
         $($args)+);})}};}
 
 mod mnist;
+mod neat;
 mod elm;
 
-fn help() -> Result<(), String> {
+fn help() -> Re<()> {
   pintln! ("--info … ArrayFire info");
   pintln! ("--mnist … Experiment with MNIST");
   pintln! ("--elm … Run a simple ELM, 123 to 321");
   pintln! ("--elm-snake … Experiment with ELM activations");
-  Ok(())}
+  pintln! ("--neat … Run a simple NEAT, 123 to 321");
+  Re::Ok(())}
 
-fn main() -> Result<(), String> {
+fn main() -> Re<()> {
   let mut args = Arguments::from_env();
 
   if args.contains ("--help") {
@@ -59,15 +62,18 @@ fn main() -> Result<(), String> {
   if args.contains ("--info") {
     log! (c Green, "HW");
     arrayfire::info();
-    return Ok(())}
+    return Re::Ok(())}
 
   if args.contains ("--mnist") {
     return mnist::mnist()}
 
   if args.contains ("--elm") {
-    return elm::elm()}
+    return Re::Ok (elm::elm()?)}
 
   if args.contains ("--elm-snake") {
-    return task::block_on (elm::elm_snake())}
+    return Re::Ok (task::block_on (elm::elm_snake())?)}
 
-  Ok(())}
+  if args.contains ("--neat") {
+    return neat::neat()}
+
+  Re::Ok(())}

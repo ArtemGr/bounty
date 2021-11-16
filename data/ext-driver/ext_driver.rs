@@ -1,4 +1,5 @@
 // https://youtu.be/oHd9R6tbeCg Преимущества native messaging; подключаем ext-driver
+// https://youtu.be/pOxasztkINg Добавляем forward режим в Rust помощник
 
 #![allow(uncommon_codepoints)]
 

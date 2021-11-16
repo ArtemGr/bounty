@@ -1,5 +1,6 @@
 use crossterm::QueueableCommand;
 use crossterm::style::Color::{DarkGrey};
+use gstuff::{re::Re};
 use std::{fs, io::Write};
 //use std::io::Write;
 use std::path::Path;
@@ -25,6 +26,6 @@ fn load() -> Result<(), String> {
     try_s! (fs::rename (fnameᵗ, fname));}
   Ok(())}
 
-pub fn mnist() -> Result<(), String> {
-  try_s! (load());
-  Ok(())}
+pub fn mnist() -> Re<()> {
+  load()?;
+  Re::Ok(())}

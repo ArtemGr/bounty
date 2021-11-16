@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/ArtemGr/bounty/tree/main/steam",
   "dependencies": {
-    "knuth-shuffle": "github:Daplie/knuth-shuffle",
+    "knuth-shuffle": "^1.0.8",
     "log": "gist:25fad725870b0ada74df2bce7d115cc1",
     "playwright-webkit": "^1.10.0",
     "yaml": "^2.0.0-5"

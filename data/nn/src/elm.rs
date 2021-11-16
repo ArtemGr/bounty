@@ -1,4 +1,6 @@
 // https://youtu.be/Mi9ggpHLWGo Mapping 1 2 3 to 2 3 1 with ELM
+// https://youtu.be/hH7V_P4UXNk Experimenting with WebDriver/fantoccini to offload the ELM plots
+// https://youtu.be/tV9ezHzDPfA ELM H matmul
 
 use arrayfire::{Array, Dim4, MatProp, Seq, af_print, index, join_many, matmul, pinverse, randu, set_seed, sin};
 use crossterm::QueueableCommand;
@@ -44,6 +46,7 @@ pub fn elm() -> Result<(), String> {
   let w = randu::<f32> (wᵈ);
 
   // ⌥ extend to negative weights?
+  // ⌥ what is the smallest set of weights that still works? plot the generalization re norm of weights
   let bᵈ = Dim4::new (&[1, hidden_neurons, 1, 1]);
   let b = randu::<f32> (bᵈ);
 
@@ -83,7 +86,7 @@ pub fn elm() -> Result<(), String> {
   af_print! ("h4 = pinverse (h3) =", h4);
 
   let β = matmul (&h4, &t, MatProp::NONE, MatProp::NONE);
-  af_print! ("β = H†T =", β);
+  af_print! ("β = H†T =", β);  // Where “†” is pinverse
 
   for x in 0 .. 5 {
     log! (c DarkYellow, "Inferencing from " (x) "…");
@@ -113,6 +116,7 @@ pub async fn elm_snake() -> Result<(), String> {
   let ip = try_s! (ip.ok_or ("Found no IP in ipconfig"));
   log! (c DarkGrey, "IP: " (ip));
   // Start geckodriver, WebDriver proxy for Firefox
+  let _ = slurp_prog ("pkill geckodriver");
   let mut gecmd = try_s! (Command::new ("geckodriver.exe")
     .arg ("--host") .arg (&ip)
     .arg ("--port") .arg ("4444")
@@ -123,11 +127,12 @@ pub async fn elm_snake() -> Result<(), String> {
   let geurl = fomat! ("http://" (ip) ":4444");
   let mut client = try_s! (ClientBuilder::native().connect (&geurl) .await);
 
-  try_s! (client.goto ("https://echarts.apache.org/examples/en/editor.html?c=simple-surface&gl=1") .await);
+  try_s! (client.goto ("file:///C:/spool/synced/projects/bounty/data/nn/plot/plot.html") .await);
 
-  let mut code_panel = try_s! (client.wait_for_find (Locator::Id ("code-panel")) .await);
-  let textarea = try_s! (code_panel.find (Locator::Css ("textarea")) .await);
-  log! ([textarea]);
+  let mut form = try_s! (client.wait().for_element (Locator::Css ("form")) .await);
+  log! ([=form]);
+  let textarea = try_s! (form.find (Locator::Css ("textarea")) .await);
+  log! ([=textarea]);
 
   try_s! (gecmd.kill());  // Bye, geckodriver!
   Ok(())}
