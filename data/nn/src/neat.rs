@@ -8,18 +8,18 @@ use radiate::{Activation, Config, Genocide, Neat, NeatEnvironment, Population, P
 pub struct Inverse {}
 impl Inverse {
   fn show (&self, net: &mut Neat) {
-    pintln! ("1 → " [net.forward (&vec! [1.])]);
-    pintln! ("2 → " [net.forward (&vec! [2.])]);
-    pintln! ("3 → " [net.forward (&vec! [3.])])}}
+    pintln! ("0.1 → " [net.forward (&vec! [0.1])]);
+    pintln! ("0.2 → " [net.forward (&vec! [0.2])]);
+    pintln! ("0.3 → " [net.forward (&vec! [0.3])])}}
 impl Problem<Neat> for Inverse {
   fn empty() -> Self {Inverse {}}
   fn solve (&self, net: &mut Neat) -> f32 {
-    let v1 = net.forward (&vec! [1.]) .unwrap() [0];
-    let v2 = net.forward (&vec! [2.]) .unwrap() [0];
-    let v3 = net.forward (&vec! [3.]) .unwrap() [0];
-    let score = (1. - (3. - v1) .abs().min (1.)) +
-      (1. - (2. - v2) .abs().min (1.)) +
-      (1. - (1. - v3) .abs().min (1.));
+    let v1 = net.forward (&vec! [0.1]) .unwrap() [0];
+    let v2 = net.forward (&vec! [0.2]) .unwrap() [0];
+    let v3 = net.forward (&vec! [0.3]) .unwrap() [0];
+    let score = (1. - (0.3 - v1) .abs().min (1.)) +
+      (1. - (0.2 - v2) .abs().min (1.)) +
+      (1. - (0.1 - v3) .abs().min (1.));
     score}}
 
 pub fn neat() -> Re<()> {
