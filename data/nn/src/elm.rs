@@ -5,12 +5,73 @@
 use arrayfire::{Array, Dim4, MatProp, Seq, af_print, index, join_many, matmul, pinverse, randu, set_seed, sin};
 use crossterm::QueueableCommand;
 use crossterm::style::Color::{DarkGrey, DarkYellow};
-use fantoccini::{ClientBuilder, Locator};
-use gstuff::{rdtsc, slurp_prog};
-use regex::Regex;
+use gstuff::{re::Re, rdtsc};
 use serde_json as json;
-use std::process::{Command, Stdio};
 use std::{io::Write};
+
+#[test] #[allow(non_snake_case)] fn test_svd() {
+  // Example from https://youtu.be/Ls2TgGFfZnU
+  let sample1 = [1f32, 0., -1., 1., 1., 1.];
+  let as1 = Array::<f32>::new (&sample1, Dim4::new (&[3, 2, 1, 1]));
+  af_print! ("as1 =", as1);
+  let (U, Σ, Vᵗ) = arrayfire::svd (&as1);
+  af_print! ("U =", U);
+  af_print! ("Σ =", Σ);
+  af_print! ("Vᵗ =", Vᵗ);
+  fn flush() {std::thread::sleep (std::time::Duration::from_millis (31))} flush();
+  let mut Vᵗʹ = [0f32; 4];
+  Vᵗ.host (&mut Vᵗʹ);
+  pintln! ([=Vᵗʹ]);
+  assert_eq! (Vᵗʹ[0], -0.);
+  assert_eq! (Vᵗʹ[1], -1.);
+  assert_eq! (Vᵗʹ[2], -1.);
+  assert_eq! (Vᵗʹ[3], -0.);
+  let mut Σʹ = [0f32; 2];
+  Σ.host (&mut Σʹ);
+  pintln! ([=Σʹ]);
+  assert! ((Σʹ[0] - 3f32.sqrt()) .abs() < 0.001);
+  assert! ((Σʹ[1] - 2f32.sqrt()) .abs() < 0.001);
+  let mut Uʹ = [0f32; 9];
+  U.host (&mut Uʹ);
+  pintln! ([=Uʹ]);
+  assert! ((Uʹ[0] - (-1. / 3f32.sqrt())) .abs() < 0.001);
+  assert! ((Uʹ[1] - (-1. / 3f32.sqrt())) .abs() < 0.001);
+  assert! ((Uʹ[2] - (-1. / 3f32.sqrt())) .abs() < 0.001);
+  assert! ((Uʹ[3] - (-1. / 2f32.sqrt())) .abs() < 0.001);
+  assert! ((Uʹ[4] - 0.) .abs() < 0.001);
+  assert! ((Uʹ[5] - (1. / 2f32.sqrt())) .abs() < 0.001);
+  assert! ((Uʹ[6] - (1. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Uʹ[7] - (-2. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Uʹ[8] - (1. / 6f32.sqrt())) .abs() < 0.001);
+  flush();
+
+  // Example from https://youtu.be/4tvw-1HI45s
+  let sample2 = [3f32, -1., 1., 3., 1., 1.];
+  let as2 = Array::<f32>::new (&sample2, Dim4::new (&[2, 3, 1, 1]));
+  af_print! ("-------\nas2 =", as2);
+  let (U, Σ, Vᵗ) = arrayfire::svd (&as2);
+  af_print! ("U =", U);
+  af_print! ("Σ =", Σ);
+  af_print! ("Vᵗ =", Vᵗ);
+  flush();
+  let mut Vᵗʹ = [0f32; 9];
+  Vᵗ.host (&mut Vᵗʹ);
+  pintln! ([=Vᵗʹ]);
+  assert! ((Vᵗʹ[0] - (-1. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗʹ[1] - (2. / 5f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗʹ[2] - (-1. / 30f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗʹ[3] - (-2. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗʹ[4] - (-1. / 5f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗʹ[5] - (-2. / 30f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗʹ[6] - (-1. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗʹ[7] - 0.) .abs() < 0.001);
+  assert! ((Vᵗʹ[8] - (5. / 30f32.sqrt())) .abs() < 0.001);
+  let mut Σʹ = [0f32; 2];
+  Σ.host (&mut Σʹ);
+  pintln! ([=Σʹ]);
+  assert! ((Σʹ[0] - 12f32.sqrt()) .abs() < 0.001);
+  assert! ((Σʹ[1] - 10f32.sqrt()) .abs() < 0.001);
+}
 
 /// Run a simple ELM, 123 to 321
 pub fn elm() -> Result<(), String> {
@@ -106,33 +167,6 @@ pub fn elm() -> Result<(), String> {
   Ok(())}
 
 /// Experiment with ELM activations
-pub async fn elm_snake() -> Result<(), String> {
-  // Figure out the IP, in order to reach the Windows version of geckodriver from WSL2
-  let ipconfig = try_s! (slurp_prog ("/mnt/c/Windows/System32/ipconfig.exe"));
-  // NB: The active IP usually has the “Default Gateway” filled
-  let re = try_s! (Regex::new (r"\sIPv4 Address[\. ]+: ([\d\.]+)+\s+Subnet Mask[\. ]+: ([\d\.]+)\s+Default Gateway[\. ]+: ([\d\.]+)\s"));
-  let mut ip = None;
-  for ca in re.captures_iter (&ipconfig) {ip = Some (ca[1].to_string())}
-  let ip = try_s! (ip.ok_or ("Found no IP in ipconfig"));
-  log! (c DarkGrey, "IP: " (ip));
-  // Start geckodriver, WebDriver proxy for Firefox
-  let _ = slurp_prog ("pkill geckodriver");
-  let mut gecmd = try_s! (Command::new ("geckodriver.exe")
-    .arg ("--host") .arg (&ip)
-    .arg ("--port") .arg ("4444")
-    .stdout (Stdio::null())  // As of 2021-07 “inherit” would confuse WSL2 and/or bash readline
-    .stderr (Stdio::inherit())
-    .spawn());
-
-  let geurl = fomat! ("http://" (ip) ":4444");
-  let mut client = try_s! (ClientBuilder::native().connect (&geurl) .await);
-
-  try_s! (client.goto ("file:///C:/spool/synced/projects/bounty/data/nn/plot/plot.html") .await);
-
-  let mut form = try_s! (client.wait().for_element (Locator::Css ("form")) .await);
-  log! ([=form]);
-  let textarea = try_s! (form.find (Locator::Css ("textarea")) .await);
-  log! ([=textarea]);
-
-  try_s! (gecmd.kill());  // Bye, geckodriver!
-  Ok(())}
+pub async fn elm_snake() -> Re<()> {
+  // tbd
+  Re::Ok(())}
