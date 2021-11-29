@@ -8,3 +8,6 @@
 /t10k-labels-idx1-ubyte.gz
 /train-images-idx3-ubyte.gz
 /train-labels-idx1-ubyte.gz
+
+# google
+/api-project-193635906495-6d12d5589d02.json

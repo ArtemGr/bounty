@@ -11,4 +11,10 @@ export RUSTFLAGS=-Ctarget-cpu=native
 
 set -ex
 
+#cargo test --release -- --nocapture
+
 cargo build --release
+
+target/release/nn --big-query
+
+#target/release/nn --elm

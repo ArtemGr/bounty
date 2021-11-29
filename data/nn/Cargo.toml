@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = [
   "Artemciy <artemciy@gmail.com>"
 ]
-edition = "2018"
+edition = "2021"
 
 [profile.dev]
 # Debug information turned off in order to speed up the rust-analyzer loop,
@@ -22,7 +22,6 @@ lto = false
 [[bin]]
 name = "nn"
 path = "src/nn.rs"
-test = false
 doctest = false
 bench = false
 doc = false
@@ -33,12 +32,15 @@ attohttpc = {version = "0.18", default-features = false, features = ["json", "tl
   http = "*"
 arrayfire = {version = "3", features = ["afserde"]}
 chrono = "0.4"
-crossterm = "0.20"
-fantoccini = "0.17.4"
+crossterm = "0.22"
 fomat-macros = "0.3"
 gstuff = {version = "0.7", features = ["nightly", "crossterm", "rdtsc", "re"]}
+gcp-bigquery-client = "0.10"
+  tokio = "*"
 indexmap = {version = "1", features = ["serde-1"]}
 inlinable_string = {version = "0.1", features = ["serde"]}
+ndarray-linalg = {version = "0.14", features = ["intel-mkl-static"]}
+  ndarray = "*"
 once_cell = {version = "1", features = ["parking_lot"]}
 parking_lot = {version = "0.11", features = ["nightly"]}
 pico-args = "0.4"

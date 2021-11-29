@@ -44,6 +44,7 @@ macro_rules! log {
 mod mnist;
 mod neat;
 mod elm;
+mod big_query;
 
 fn help() -> Re<()> {
   pintln! ("--info … ArrayFire info");
@@ -51,6 +52,7 @@ fn help() -> Re<()> {
   pintln! ("--elm … Run a simple ELM, 123 to 321");
   pintln! ("--elm-snake … Experiment with ELM activations");
   pintln! ("--neat … Run a simple NEAT, 123 to 321");
+  pintln! ("--big-query … tbd");
   Re::Ok(())}
 
 fn main() -> Re<()> {
@@ -75,5 +77,8 @@ fn main() -> Re<()> {
 
   if args.contains ("--neat") {
     return neat::neat()}
+
+  if args.contains ("--big-query") {
+    return big_query::big_query()}
 
   Re::Ok(())}
