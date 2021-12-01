@@ -6,10 +6,18 @@ use arrayfire::{Array, Dim4, MatProp, Seq, af_print, index, join_many, matmul, p
 use crossterm::QueueableCommand;
 use crossterm::style::Color::{DarkGrey, DarkYellow};
 use gstuff::{re::Re, rdtsc};
+use ndarray::Array2;
+use ndarray_linalg::{SVDDC, UVTFlag};
 use serde_json as json;
 use std::{io::Write};
 
+fn round_to (decimals: u32, num: f32) -> f32 {
+  let r = 10u32 .pow (decimals) as f32;
+  (num * r) .round() / r}
+
 #[test] #[allow(non_snake_case)] fn test_svd() {
+  // cf. https://youtu.be/DG7YTlGnCEo Singular Value Decomposition (SVD) and Image Compression
+
   // Example from https://youtu.be/Ls2TgGFfZnU
   let sample1 = [1f32, 0., -1., 1., 1., 1.];
   let as1 = Array::<f32>::new (&sample1, Dim4::new (&[3, 2, 1, 1]));
@@ -18,60 +26,110 @@ use std::{io::Write};
   af_print! ("U =", U);
   af_print! ("Σ =", Σ);
   af_print! ("Vᵗ =", Vᵗ);
-  fn flush() {std::thread::sleep (std::time::Duration::from_millis (31))} flush();
-  let mut Vᵗʹ = [0f32; 4];
-  Vᵗ.host (&mut Vᵗʹ);
-  pintln! ([=Vᵗʹ]);
+  let mut Vᵗʹ = [0f32; 4]; Vᵗ.host (&mut Vᵗʹ);
+  let mut Σʹ = [0f32; 2]; Σ.host (&mut Σʹ);
+  let mut Uʹ = [0f32; 9]; U.host (&mut Uʹ);
+  // Row-major order
+  let a1 = Array2::<f32>::from_shape_vec ((3, 2), vec! [1., 1., 0., 1., -1., 1.]) .unwrap();
+  //let (U, Σ, Vᵗ) = a1.svd_inplace (true, true) .unwrap();
+  let (U, Σ, Vᵗ) = a1.svddc (UVTFlag::Full) .unwrap();
+  let U = U.unwrap(); let Vᵗ = Vᵗ.unwrap();
+  pintln! ([=Vᵗ]);
   assert_eq! (Vᵗʹ[0], -0.);
+  assert_eq! (round_to (7, Vᵗ[[0, 0]]), -0.);
+
   assert_eq! (Vᵗʹ[1], -1.);
+  assert_eq! (Vᵗ[[1, 0]], 1.);
+
   assert_eq! (Vᵗʹ[2], -1.);
+  assert_eq! (Vᵗ[[0, 1]], 1.);
+
   assert_eq! (Vᵗʹ[3], -0.);
-  let mut Σʹ = [0f32; 2];
-  Σ.host (&mut Σʹ);
-  pintln! ([=Σʹ]);
+  assert_eq! (round_to (7, Vᵗ[[1, 1]]), -0.);
+
+  pintln! ([=Σ]);
   assert! ((Σʹ[0] - 3f32.sqrt()) .abs() < 0.001);
+  assert! ((Σ[0] - 3f32.sqrt()) .abs() < 0.001);
+
   assert! ((Σʹ[1] - 2f32.sqrt()) .abs() < 0.001);
-  let mut Uʹ = [0f32; 9];
-  U.host (&mut Uʹ);
-  pintln! ([=Uʹ]);
+  assert! ((Σ[1] - 2f32.sqrt()) .abs() < 0.001);
+
+  pintln! ([=U]);
   assert! ((Uʹ[0] - (-1. / 3f32.sqrt())) .abs() < 0.001);
+  assert! ((U[[0, 0]] - (1. / 3f32.sqrt())) .abs() < 0.001);
+
   assert! ((Uʹ[1] - (-1. / 3f32.sqrt())) .abs() < 0.001);
+  assert! ((U[[1, 0]] - (1. / 3f32.sqrt())) .abs() < 0.001);
+
   assert! ((Uʹ[2] - (-1. / 3f32.sqrt())) .abs() < 0.001);
+  assert! ((U[[2, 0]] - (1. / 3f32.sqrt())) .abs() < 0.001);
+
   assert! ((Uʹ[3] - (-1. / 2f32.sqrt())) .abs() < 0.001);
+  assert! ((U[[0, 1]] - (1. / 2f32.sqrt())) .abs() < 0.001);
+
   assert! ((Uʹ[4] - 0.) .abs() < 0.001);
+  assert! ((U[[1, 1]] - 0.) .abs() < 0.001);
+
   assert! ((Uʹ[5] - (1. / 2f32.sqrt())) .abs() < 0.001);
+  assert! ((U[[2, 1]] - (-1. / 2f32.sqrt())) .abs() < 0.001);
+
   assert! ((Uʹ[6] - (1. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((U[[0, 2]] - (1. / 6f32.sqrt())) .abs() < 0.001);
+
   assert! ((Uʹ[7] - (-2. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((U[[1, 2]] - (-2. / 6f32.sqrt())) .abs() < 0.001);
+
   assert! ((Uʹ[8] - (1. / 6f32.sqrt())) .abs() < 0.001);
-  flush();
+  assert! ((U[[2, 2]] - (1. / 6f32.sqrt())) .abs() < 0.001);
 
   // Example from https://youtu.be/4tvw-1HI45s
   let sample2 = [3f32, -1., 1., 3., 1., 1.];
   let as2 = Array::<f32>::new (&sample2, Dim4::new (&[2, 3, 1, 1]));
+  // Row-major order
+  let a2 = Array2::<f32>::from_shape_vec ((2, 3), vec! [3., 1., 1., -1., 3., 1.]) .unwrap();
   af_print! ("-------\nas2 =", as2);
   let (U, Σ, Vᵗ) = arrayfire::svd (&as2);
   af_print! ("U =", U);
   af_print! ("Σ =", Σ);
   af_print! ("Vᵗ =", Vᵗ);
-  flush();
-  let mut Vᵗʹ = [0f32; 9];
-  Vᵗ.host (&mut Vᵗʹ);
-  pintln! ([=Vᵗʹ]);
+  let mut Vᵗʹ = [0f32; 9]; Vᵗ.host (&mut Vᵗʹ);
+  let mut Σʹ = [0f32; 2]; Σ.host (&mut Σʹ);
+  let (U, Σ, Vᵗ) = a2.svddc (UVTFlag::Full) .unwrap();
+  let _U = U.unwrap(); let Vᵗ = Vᵗ.unwrap();
+  pintln! ([=Vᵗ]);
   assert! ((Vᵗʹ[0] - (-1. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗ[[0, 0]] - (-1. / 6f32.sqrt())) .abs() < 0.001);
+
   assert! ((Vᵗʹ[1] - (2. / 5f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗ[[1, 0]] - (2. / 5f32.sqrt())) .abs() < 0.001);
+
   assert! ((Vᵗʹ[2] - (-1. / 30f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗ[[2, 0]] - (-1. / 30f32.sqrt())) .abs() < 0.001);
+
   assert! ((Vᵗʹ[3] - (-2. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗ[[0, 1]] - (-2. / 6f32.sqrt())) .abs() < 0.001);
+
   assert! ((Vᵗʹ[4] - (-1. / 5f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗ[[1, 1]] - (-1. / 5f32.sqrt())) .abs() < 0.001);
+
   assert! ((Vᵗʹ[5] - (-2. / 30f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗ[[2, 1]] - (-2. / 30f32.sqrt())) .abs() < 0.001);
+
   assert! ((Vᵗʹ[6] - (-1. / 6f32.sqrt())) .abs() < 0.001);
+  assert! ((Vᵗ[[0, 2]] - (-1. / 6f32.sqrt())) .abs() < 0.001);
+
   assert! ((Vᵗʹ[7] - 0.) .abs() < 0.001);
+  assert! ((Vᵗ[[1, 2]] - 0.) .abs() < 0.001);
+
   assert! ((Vᵗʹ[8] - (5. / 30f32.sqrt())) .abs() < 0.001);
-  let mut Σʹ = [0f32; 2];
-  Σ.host (&mut Σʹ);
-  pintln! ([=Σʹ]);
+  assert! ((Vᵗ[[2, 2]] - (5. / 30f32.sqrt())) .abs() < 0.001);
+
+  pintln! ([=Σ]);
   assert! ((Σʹ[0] - 12f32.sqrt()) .abs() < 0.001);
+  assert! ((Σ[0] - 12f32.sqrt()) .abs() < 0.001);
+
   assert! ((Σʹ[1] - 10f32.sqrt()) .abs() < 0.001);
-}
+  assert! ((Σ[1] - 10f32.sqrt()) .abs() < 0.001);}
 
 /// Run a simple ELM, 123 to 321
 pub fn elm() -> Result<(), String> {
