@@ -41,7 +41,7 @@ fn main() -> Result<(), String> {
   try_s! (pathsᶻ.read_to_string (&mut paths));
 
   let home = try_s! (env::var ("HOME"));
-  let mut ccdl = try_s! (fs::File::with_options()
+  let mut ccdl = try_s! (fs::File::options()
     .append (true)
     .create (true)
     .open (fomat! ((home) "/.common-crawl-dl.yaml")));
@@ -67,11 +67,17 @@ fn main() -> Result<(), String> {
     // Next step: maintain a large in-memory buffer that we can parse in one step from the top;
     // be ready to skip a part of the incoming HTTP stream when a WARC record doesn't fit the buffer
 
+    let mut window = Vec::<u8>::with_capacity (2*1024*1024);
+
     let mut buf = [0u8; 65536];
     let mut total = 0;
     loop {
       let got = try_s! (rc.read (&mut buf));
       if got == 0 {break}
+
+      window.extend_from_slice (&buf[0..got]);
+      if window.len() > 1024*1024 {window.drain (0..314*1024);}
+
       total += got}
 
     assert_eq! (total, len);
