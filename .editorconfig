@@ -19,3 +19,15 @@ indent_size = 4
 max_line_length = off
 # Trailing whitespaces are useful in MD-styled inline documentation.
 trim_trailing_whitespace = false
+
+[*.py]
+indent_style = space
+indent_size = 2
+
+# NB: Preferred Python formatting in terms of VSCode:
+#
+#    "python.formatting.provider": "yapf",
+#    "python.formatting.yapfArgs": [
+#      "--style={based_on_style: google, indent_width: 2, column_limit: 111}"
+#    ],
+#    "[python]": {"editor.rulers": [112]},
