@@ -94,17 +94,18 @@ if __name__ == '__main__':
   import matplotlib.pyplot as plt
   import pylab
 
-  def plot():
+  def plot(title):
     xs = []
     ys = []
     for i in np.linspace(-1, 7, 44):
       xs.append(i)
       ys.append(infer(weights, bias, β, [i])[0])
-    plt.plot(xs, ys, label='id')
+    plt.plot(xs, ys)
     plt.scatter(inputs, outputs)
+    pylab.gcf().canvas.manager.set_window_title(title)
     pylab.show()
 
-  plot()
+  plot('id')
 
   inputs = [[1], [2], [3]]
   outputs = [[3], [2], [1]]
@@ -112,7 +113,7 @@ if __name__ == '__main__':
   log('inverse (1) =', infer(weights, bias, β, [1]))
   log('inverse (2) =', infer(weights, bias, β, [2]))
   log('inverse (3) =', infer(weights, bias, β, [3]))
-  plot()
+  plot('inverse')
 
   weights, bias, β = train(3, [[2, 2], [3, 3], [2, 3]], [[4], [6], [5]])
   log('sum (2, 2) =', infer(weights, bias, β, [2, 2]))
