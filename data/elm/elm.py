@@ -40,10 +40,10 @@ def build_h(input, weights, bias):
     row = []
     for neuron in range(0, ᶰ):
       # The neuron then applies an activation function to the “sum of weighted inputs”
-      wxb = 0
+      wx = 0
       for x in input[sample]:
-        wxb += weights[neuron] * x + bias[neuron]
-      row.append(math.sin(wxb))
+        wx += weights[neuron] * x
+      row.append(math.sin(wx + bias[neuron]))
     h.append(row)
   return h
 
