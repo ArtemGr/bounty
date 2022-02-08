@@ -90,12 +90,13 @@ if __name__ == '__main__':
       log('id (2) =', infer(weights, bias, β, [2]))
 
     xs = np.linspace(-1, 7, 44)
-    ys = list(map(lambda x: infer(weights, bias, β, [x])[0], xs))
-    width, height = plot(a, xs, ys, wofs)
-    wofs += width // 2 + 3
+    ys = list(infer(weights, bias, β, [x])[0] for x in xs)
+    map = plot(a, xs, ys, wofs)
+    for *_, ax, ay in map.zip([i[0] for i in inputs], [o[0] for o in outputs]):
+      a[ay][ax] = '\033[34m*\033[0m'
+    wofs += map.width // 2 + 3
 
-  for y in a:
-    print(''.join(y))
+  print('\n'.join(''.join(y) for y in a))
 
   inputs = [[1], [2], [3]]
   outputs = [[3], [2], [1]]
