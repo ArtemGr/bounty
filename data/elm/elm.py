@@ -1,16 +1,24 @@
 #!/usr/bin/env python
 
-# https://www.kaggle.com/robertbm/extreme-learning-machine-example
+# With Python 3:
+#
+#     pip install --user --upgrade -r requirements.txt
+#     python elm.py
+
+# cf. https://www.kaggle.com/robertbm/extreme-learning-machine-example
 
 # https://youtu.be/oq3tq-0gxOs importing and loading MNIST
 # https://youtu.be/AhmSUmrAkeQ solving dependency duplication due to version mismatch
 # https://youtu.be/0mcyw5uapWc running tfjs-examples-mnist-node on copied tensors
 # https://youtu.be/dXRyUurAy3k is TensorFlow a good fit and why turn low level
+# https://youtu.be/cXrgsmss7og plotting ELM functions with Bedstead
 
 import math
+import shutil
+from turtle import width
 
 import numpy as np
-from llog import log
+from llog import floorᵃ, log, plot
 
 rng = np.random.default_rng()
 
@@ -55,7 +63,7 @@ def train(ᶰ, inputs, outputs):
   hꜝ = np.linalg.pinv(h)
   # β = H†T, where † is Moore–Penrose inverse
   β = np.matmul(hꜝ, outputs)
-  return (weights, bias, β)
+  return weights, bias, β
 
 
 def infer(weights, bias, β, input):
@@ -67,45 +75,27 @@ def test(input, idim, output, odim):
   pass
 
 
-def floorʹ(v):
-  '''drop more decimal places depending on whether the integer is large'''
-  if 99 < v:
-    return math.floor(v)
-  if 9 < v:
-    return math.floor(v * 10) / 10
-  if 0.9 < v:
-    return math.floor(v * 100) / 100
-  if 0.09 < v:
-    return math.floor(v * 1000) / 1000
-  return math.floor(v * 10000) / 10000
-
-
-def floorᵃ(a):
-  return list(map(lambda v: floorʹ(v), a))
-
-
 if __name__ == '__main__':
+  wh = shutil.get_terminal_size((111, 11))
+  wh = (wh.columns - 1, min(7, wh.lines - 3))
+  a = [[' ' for x in range(wh[0])] for u in range(wh[1])]
+  wofs = 0
+
   inputs = [[1], [2]]
   outputs = [[1], [2]]
-  weights, bias, β = train(2, inputs, outputs)
-  log('id (1) =', infer(weights, bias, β, [1]))
-  log('id (2) =', infer(weights, bias, β, [2]))
+  while 7 < wh[0] - wofs:
+    weights, bias, β = train(2, inputs, outputs)
+    if wofs == 0:
+      log('id (1) =', infer(weights, bias, β, [1]))
+      log('id (2) =', infer(weights, bias, β, [2]))
 
-  import matplotlib.pyplot as plt
-  import pylab
+    xs = np.linspace(-1, 7, 44)
+    ys = list(map(lambda x: infer(weights, bias, β, [x])[0], xs))
+    width, height = plot(a, xs, ys, wofs)
+    wofs += width // 2 + 3
 
-  def plot(title):
-    xs = []
-    ys = []
-    for i in np.linspace(-1, 7, 44):
-      xs.append(i)
-      ys.append(infer(weights, bias, β, [i])[0])
-    plt.plot(xs, ys)
-    plt.scatter(inputs, outputs)
-    pylab.gcf().canvas.manager.set_window_title(title)
-    pylab.show()
-
-  plot('id')
+  for y in a:
+    print(''.join(y))
 
   inputs = [[1], [2], [3]]
   outputs = [[3], [2], [1]]
@@ -113,7 +103,7 @@ if __name__ == '__main__':
   log('inverse (1) =', infer(weights, bias, β, [1]))
   log('inverse (2) =', infer(weights, bias, β, [2]))
   log('inverse (3) =', infer(weights, bias, β, [3]))
-  plot('inverse')
+  #plot('inverse')
 
   weights, bias, β = train(3, [[2, 2], [3, 3], [2, 3]], [[4], [6], [5]])
   log('sum (2, 2) =', infer(weights, bias, β, [2, 2]))
