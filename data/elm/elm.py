@@ -14,11 +14,8 @@
 # https://youtu.be/cXrgsmss7og plotting ELM functions with Bedstead
 
 import math
-import shutil
-from turtle import width
 
 import numpy as np
-from llog import floorᵃ, log, plot
 
 rng = np.random.default_rng()
 
@@ -76,6 +73,10 @@ def test(input, idim, output, odim):
 
 
 if __name__ == '__main__':
+  import shutil
+
+  from llog import floorᵃ, log, plot
+
   wh = shutil.get_terminal_size((111, 11))
   wh = (wh.columns - 1, min(7, wh.lines - 3))
   a = [[' ' for x in range(wh[0])] for u in range(wh[1])]
