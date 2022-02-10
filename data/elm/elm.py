@@ -48,7 +48,11 @@ def build_h(inputs, weights, bias):
       wx = 0
       for x in inputs[sample]:
         wx += weights[neuron] * x
-      row.append(math.sin(wx + bias[neuron]))
+      try:
+        g = math.sin(wx + bias[neuron])
+      except ValueError:
+        g = 0
+      row.append(g)
     h.append(row)
   return h
 
