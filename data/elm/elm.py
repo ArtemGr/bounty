@@ -14,6 +14,7 @@
 # https://youtu.be/cXrgsmss7og plotting ELM functions with Bedstead
 
 import math
+import time
 
 import numpy as np
 
@@ -57,13 +58,26 @@ def build_h(inputs, weights, bias):
   return h
 
 
-def train(ᶰ, inputs, outputs):
+def train(ᶰ, inputs, outputs, time_it=False):
   weights = rng.standard_normal(ᶰ, dtype=np.float32)
   bias = rng.standard_normal(ᶰ, dtype=np.float32)
+
+  start = time.time()
   h = build_h(inputs, weights, bias)
+  if time_it:
+    print('train] build_h:', round((time.time() - start) * 1000) / 1000)
+
+  start = time.time()
   hꜝ = np.linalg.pinv(h)
+  if time_it:
+    print('train] pinv:', round((time.time() - start) * 10000) / 10000)
+
+  start = time.time()
   # β = H†T, where † is Moore–Penrose inverse
   β = np.matmul(hꜝ, outputs)
+  if time_it:
+    print('train] matmul:', round((time.time() - start) * 10000) / 10000)
+
   return weights, bias, β
 
 
