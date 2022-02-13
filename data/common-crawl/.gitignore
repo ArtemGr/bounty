@@ -3,3 +3,9 @@
 
 # rust
 /target
+
+# python
+/__pycache__
+
+# state
+/*.mdb
