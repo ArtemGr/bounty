@@ -40,7 +40,10 @@ if __name__ == '__main__':
     # https://datatracker.ietf.org/doc/html/rfc7233
     # https://en.wikipedia.org/wiki/Byte_serving
     # Accept-Ranges: bytes
+
+    # in light of 503, time the opening and keep stats (in the State), to see if we'd need to optimize for stream acquisition
     resp = lib.commoncrawl_s3('/' + path.decode())
+
     log(resp)
     # feed resp to fastwarc
     # (accepts compressed streams)
