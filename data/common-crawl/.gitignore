@@ -9,3 +9,4 @@
 
 # state
 /*.mdb
+/state.yaml
