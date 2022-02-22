@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+# https://www.gymlibrary.ml/pages/environments/classic_control/cart_pole
+
+import sys
+import time
+import json
+import gym
+import numpy as np
+from llog import floorʹ, log
+
+if '--spin' in sys.argv:
+  sessions = []
+
+  # 'Blackjack-v1', 'FrozenLake-v1', 'Taxi-v3', 'MountainCar-v0', 'FrozenLake-v1', 'Pendulum-v1',
+  # 'Acrobot-v1', 'MountainCarContinuous-v0'
+  env = gym.make('CartPole-v1')
+
+  while len(sessions) < 1234:
+    env.reset()
+    actions = []
+    observations = []
+    for frame in range(234):
+      #env.render()
+      #time.sleep(.02)
+
+      action = int(env.action_space.sample())
+      observation, reward, done, info = env.step(action)
+
+      actions.append(action)
+      observations.append(observation.tolist())
+
+      if done:
+        break
+
+    sessions.append((actions, observations))
+
+  env.close()
+
+  open('cartpole.json', 'w').write(json.dumps(sessions))
+
+if '--elm' in sys.argv:  # Inference with ELM
+  sys.path.insert(0, '..')
+  import elm.elm as elm
+  sys.path.remove('..')
+
+  sessions = json.loads(open('cartpole.json', 'r').read())
+
+  # infer: elm (stateⱼ₋₁, actionⱼ) = stateⱼ
+  inputs, outputs = [], []
+  for actions, observations in sessions:
+    for j in range(1, len(observations)):
+      inputs.append([*observations[j - 1], actions[j]])
+      outputs.append(observations[j])
+  weights, bias, β = elm.train(31, inputs, outputs)
+  #    3 .. 0.27
+  #   31 .. 0.22
+  #  314 .. 0.22
+  # 1234 .. 0.22
+
+  expecteds, predictions = [], []
+  for actions, observations in sessions:
+    for j in range(1, len(observations)):
+      predictions.append(elm.infer(weights, bias, β, [*observations[j - 1], actions[j]]))
+      expecteds.append(observations[j])
+
+  mse = np.square(np.subtract(expecteds, predictions)).mean()
+  log(floorʹ(mse))
+
+if '--tf' in sys.argv:  # Inference with TF
+  from tensorflow import keras
+  from tensorflow.keras import layers
+
+  inputs = keras.Input(shape=(5,), name="state-and-action")
+  x = layers.Dense(314, activation="relu", name="dense_1")(inputs)
+  x = layers.Dense(314, activation="relu", name="dense_2")(x)
+  outputs = layers.Dense(4, activation="softmax", name="state-prediction")(x)
+  #   3 .. 0.18
+  #  31 .. 0.18
+  # 314 .. 0.18
+
+  model = keras.Model(inputs=inputs, outputs=outputs)
+
+  sessions = json.loads(open('cartpole.json', 'r').read())
+  inputs, outputs = [], []
+  for actions, observations in sessions:
+    for j in range(1, len(observations)):
+      inputs.append([*observations[j - 1], actions[j]])
+      outputs.append(observations[j])
+
+  model.compile(optimizer=keras.optimizers.RMSprop(), loss=keras.losses.MeanSquaredError())
+
+  inputs = np.vstack(inputs).astype('float32')
+  outputs = np.vstack(outputs).astype('float32')
+
+  # https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit
+  history = model.fit(inputs[3:], outputs[3:], validation_split=0.01, epochs=2)
+
+  predictions = model.predict(inputs)
+  log(outputs[0], '-', predictions[0])
+
+  mse = np.square(np.subtract(outputs, predictions)).mean()
+  log(floorʹ(mse))
