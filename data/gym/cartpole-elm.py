@@ -105,28 +105,34 @@ if '--neat' in sys.argv:  # Inference with NEAT
 
   config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                        neat.DefaultStagnation, 'neat.conf')
-  p = neat.Population(config)
-  p.add_reporter(neat.StdOutReporter(False))
-
   _, inputs, outputs = load_inputs()
 
-  def eval_genomes(genomes, config):
-    for genome_id, genome in genomes:
-      genome.fitness = 4.0
-      net = neat.nn.FeedForwardNetwork.create(genome, config)
-      for count, (input, expected) in enumerate(zip(inputs, outputs)):
-        prediction = net.activate(input)
-        genome.fitness -= np.square(np.subtract(prediction, expected)).mean()
-        if 31 < count:
-          break
+  for output_selection in range(4):
 
-  winner = p.run(eval_genomes)
+    p = neat.Population(config)
 
-  log('Best genome:\n{!s}'.format(winner))
+    #p.add_reporter(neat.StdOutReporter(False))
 
-  winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
 
-  for input, expected in zip(inputs, outputs):
-    prediction = winner_net.activate(input)
-    log("  input {!r}, expected output {!r}, got {!r}".format(input, expected, floora(prediction)))
-    break
+    def eval_genomes(genomes, config):
+      for genome_id, genome in genomes:
+        genome.fitness = 4.0
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        for count, (input, expected) in enumerate(zip(inputs, outputs)):
+          prediction = net.activate(input)
+          genome.fitness -= np.square(np.subtract(prediction[0], expected[output_selection])).mean()
+          if 123 < count:
+            break
+
+    winner = p.run(eval_genomes)
+
+    log(f"output_selection {output_selection} genome:\n{winner}")
+
+    winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+
+    for count, (input, expected) in enumerate(zip(inputs, outputs)):
+      prediction = winner_net.activate(input)
+      expected = floorʹ(expected[output_selection])
+      log(f"output_selection {output_selection} expected {expected} predicted {floorʹ(prediction[0])}")
+      if 32 < count:
+        break
