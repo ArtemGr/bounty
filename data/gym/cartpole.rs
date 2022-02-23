@@ -9,21 +9,18 @@ use tch::{nn, nn::Module, nn::OptimizerConfig, Device, Reduction};
 
 /// Example of a specialized network, reused in a generic network.
 #[derive(Debug)]
-struct Act2Vel {bs: Tensor, i2h: Tensor, h2o: Tensor}
+struct Act2Vel {bias: Tensor, i2o: Tensor}
 impl Act2Vel {
   fn new (vs: &nn::Path) -> Act2Vel {
-    const HIDDEN: i64 = 1;
     let bound = 1.0 / (2 as f64) .sqrt();
     Act2Vel {
-      bs: vs.var ("bias", &[HIDDEN], nn::Init::Uniform {lo: -bound, up: bound}),
-      i2h: vs.var ("i2h", &[HIDDEN, 2], nn::Init::KaimingUniform),
-      h2o: vs.var ("h2o", &[1, HIDDEN], nn::Init::KaimingUniform)}}}
+      bias: vs.var ("bias", &[1], nn::Init::Uniform {lo: -bound, up: bound}),
+      i2o: vs.var ("i2o", &[1, 2], nn::Init::KaimingUniform)}}}
 impl Module for Act2Vel {
   fn forward (&self, xs: &Tensor) -> Tensor {
     // use just the “previous velocity” and the “action” columns for the “action → velocity” inference
     let xs = xs.index (&[None, Some (&Tensor::of_slice (&[1i64, 4]))]);
-    let xs = xs.matmul (&self.i2h.tr()) + &self.bs;
-    xs.matmul (&self.h2o.tr())}}
+    xs.matmul (&self.i2o.tr()) + &self.bias}}
 
 #[derive(Debug)]
 struct Net {a2v: Act2Vel, bs: Tensor, i2h: Tensor, h2o: Tensor}
@@ -94,6 +91,11 @@ fn mainʹ() -> Re<()> {
     pintln! ("velocity expected " {"{:>7.4}", outputsᵃ[ix * 4 + 1]}
       " a2v " {"{:>7.4}", f32::from (velocity)}
       " net " {"{:>7.4}", f32::from (prediction.get (0) .get (1))})}
+
+  pintln! ("--- a2v i2o ---");
+  net.a2v.i2o.print();
+  pintln! ("--- a2v bias ---");
+  net.a2v.bias.print();
 
   Re::Ok(())}
 
