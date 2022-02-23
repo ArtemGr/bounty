@@ -19,7 +19,7 @@ doc = false
 
 [dependencies]
 fomat-macros = "0.3"
-gstuff = {version = "0.7", features = ["nightly", "re"]}
+gstuff = {version = ">= 0.7.14", features = ["nightly", "re"]}
 serde = "1"
 serde_derive = "1"
 serde_json = "1" 

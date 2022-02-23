@@ -7,12 +7,31 @@ use serde_json as json;
 use tch::Tensor;
 use tch::{nn, nn::Module, nn::OptimizerConfig, Device, Reduction};
 
-fn net(vs: &nn::Path) -> impl Module {
-  const HIDDEN_NODES: i64 = 31;
-  nn::seq()
-    .add(nn::linear(vs / "layer1", 5, HIDDEN_NODES, Default::default()))
-    .add_fn(|xs| xs.relu())
-    .add(nn::linear(vs, HIDDEN_NODES, 4, Default::default()))}
+#[derive(Debug)]
+struct Linear {ws: Tensor, bs: Tensor}
+impl Linear {
+  fn new (vs: &nn::Path, in_dim: i64, out_dim: i64) -> Linear {
+    let bound = 1.0 / (in_dim as f64) .sqrt();
+    Linear {
+      ws: vs.var ("weight", &[out_dim, in_dim], nn::Init::KaimingUniform),
+      bs: vs.var ("bias", &[out_dim], nn::Init::Uniform {lo: -bound, up: bound})}}}
+impl Module for Linear {
+  fn forward (&self, xs: &Tensor) -> Tensor {
+    xs.matmul (&self.ws.tr()) + &self.bs}}
+
+#[derive(Debug)]
+struct Net {l1: Linear, l2: Linear}
+impl Net {
+  fn new (vs: &nn::Path) -> Net {
+    const HIDDEN_NODES: i64 = 31;
+    Net {
+      l1: Linear::new (&(vs / "layer1"), 5, HIDDEN_NODES),
+      l2: Linear::new (vs, HIDDEN_NODES, 4)}}}
+impl Module for Net {
+  fn forward (&self, xs: &Tensor) -> Tensor {
+    let xs = self.l1.forward (xs);
+    //let xs = xs.relu();
+    self.l2.forward (&xs)}}
 
 fn mainʹ() -> Re<()> {
   let sessions: Vec<(Vec<u8>, Vec<(f32, f32, f32, f32)>)> = json::from_slice (&slurp (&"cartpole.json"))?;
@@ -34,7 +53,7 @@ fn mainʹ() -> Re<()> {
   let outputs = Tensor::of_slice (&outputsᵃ) .view((outputsᵃ.len() as i64 / 4, 4));
 
   let vs = nn::VarStore::new (Device::Cpu);
-  let net = net(&vs.root());
+  let net = Net::new (&vs.root());
   let mut opt = nn::Adam::default().build (&vs, 0.1)?;
   opt.set_weight_decay (0.01);
   for epoch in 1 ..= 2022 {
@@ -42,12 +61,12 @@ fn mainʹ() -> Re<()> {
     opt.backward_step (&loss);
     let lossᶠ = f64::from (&loss);
     pintln! ("epoch " (epoch) " loss " (lossᶠ));
-    if lossᶠ < 0.2 {break}}
+    if lossᶠ < 0.1 {break}}
 
   for ix in 0..3 {
     let input = Tensor::of_slice (&inputsᵃ[ix * 5 .. (ix + 1) * 5]);
     let prediction = net.forward (&input);
-    pintln! ([input] ", " [&outputsᵃ[ix * 4 .. (ix + 1) * 4]] " vs " [prediction])}
+    pintln! ([&outputsᵃ[ix * 4 .. (ix + 1) * 4]] " vs " [prediction])}
 
   Re::Ok(())}
 
