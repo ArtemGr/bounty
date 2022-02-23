@@ -2,36 +2,52 @@
 
 use fomat_macros::pintln;
 use gstuff::re::Re;
-use gstuff::slurp;
+use gstuff::{round_to, slurp};
 use serde_json as json;
 use tch::Tensor;
 use tch::{nn, nn::Module, nn::OptimizerConfig, Device, Reduction};
 
+/// Example of a specialized network, reused in a generic network.
 #[derive(Debug)]
-struct Linear {ws: Tensor, bs: Tensor}
-impl Linear {
-  fn new (vs: &nn::Path, in_dim: i64, out_dim: i64) -> Linear {
-    let bound = 1.0 / (in_dim as f64) .sqrt();
-    Linear {
-      ws: vs.var ("weight", &[out_dim, in_dim], nn::Init::KaimingUniform),
-      bs: vs.var ("bias", &[out_dim], nn::Init::Uniform {lo: -bound, up: bound})}}}
-impl Module for Linear {
+struct Act2Vel {bs: Tensor, i2h: Tensor, h2o: Tensor}
+impl Act2Vel {
+  fn new (vs: &nn::Path) -> Act2Vel {
+    const HIDDEN: i64 = 1;
+    let bound = 1.0 / (2 as f64) .sqrt();
+    Act2Vel {
+      bs: vs.var ("bias", &[HIDDEN], nn::Init::Uniform {lo: -bound, up: bound}),
+      i2h: vs.var ("i2h", &[HIDDEN, 2], nn::Init::KaimingUniform),
+      h2o: vs.var ("h2o", &[1, HIDDEN], nn::Init::KaimingUniform)}}}
+impl Module for Act2Vel {
   fn forward (&self, xs: &Tensor) -> Tensor {
-    xs.matmul (&self.ws.tr()) + &self.bs}}
+    // use just the “previous velocity” and the “action” columns for the “action → velocity” inference
+    let xs = xs.index (&[None, Some (&Tensor::of_slice (&[1i64, 4]))]);
+    let xs = xs.matmul (&self.i2h.tr()) + &self.bs;
+    xs.matmul (&self.h2o.tr())}}
 
 #[derive(Debug)]
-struct Net {l1: Linear, l2: Linear}
+struct Net {a2v: Act2Vel, bs: Tensor, i2h: Tensor, h2o: Tensor}
 impl Net {
   fn new (vs: &nn::Path) -> Net {
-    const HIDDEN_NODES: i64 = 31;
+    const HIDDEN: i64 = 5;
+    let bound = 1.0 / (5 as f64) .sqrt();
     Net {
-      l1: Linear::new (&(vs / "layer1"), 5, HIDDEN_NODES),
-      l2: Linear::new (vs, HIDDEN_NODES, 4)}}}
+      a2v: Act2Vel::new (&(vs / "a2v")),
+      bs: vs.var ("bias", &[HIDDEN], nn::Init::Uniform {lo: -bound, up: bound}),
+      i2h: vs.var ("i2h", &[HIDDEN, 6], nn::Init::KaimingUniform),
+      h2o: vs.var ("h2o", &[4, HIDDEN], nn::Init::KaimingUniform)}}}
 impl Module for Net {
   fn forward (&self, xs: &Tensor) -> Tensor {
-    let xs = self.l1.forward (xs);
+    let velocity = self.a2v.forward (xs);
+
+    // add separately predicted velocity into inputs
+    // cf. https://pytorch.org/docs/stable/generated/torch.cat.html
+    let xs = Tensor::cat (&[xs, &velocity], 1);
+
+    let xs = xs.matmul (&self.i2h.tr()) + &self.bs;
+    // Learns better without activation.
     //let xs = xs.relu();
-    self.l2.forward (&xs)}}
+    xs.matmul (&self.h2o.tr())}}
 
 fn mainʹ() -> Re<()> {
   let sessions: Vec<(Vec<u8>, Vec<(f32, f32, f32, f32)>)> = json::from_slice (&slurp (&"cartpole.json"))?;
@@ -40,33 +56,44 @@ fn mainʹ() -> Re<()> {
   for (actions, observations) in &sessions {
     for ix in 1 .. actions.len() {
       let obs = &observations[ix-1];
-      inputsᵃ.push (obs.0);
-      inputsᵃ.push (obs.1);
-      inputsᵃ.push (obs.2);
-      inputsᵃ.push (obs.3);
+      inputsᵃ.push (obs.0);  // Cart Position
+      inputsᵃ.push (obs.1);  // Cart Velocity
+      inputsᵃ.push (obs.2);  // Pole Angle
+      inputsᵃ.push (obs.3);  // Pole Angular Velocity
       inputsᵃ.push (actions[ix] as f32);
-      outputsᵃ.push (observations[ix].0);
-      outputsᵃ.push (observations[ix].1);
-      outputsᵃ.push (observations[ix].2);
-      outputsᵃ.push (observations[ix].3)}}
+      outputsᵃ.push (observations[ix].0);  // Cart Position
+      outputsᵃ.push (observations[ix].1);  // Cart Velocity
+      outputsᵃ.push (observations[ix].2);  // Pole Angle
+      outputsᵃ.push (observations[ix].3)}}  // Pole Angular Velocity
   let inputs = Tensor::of_slice (&inputsᵃ) .view((inputsᵃ.len() as i64 / 5, 5));
   let outputs = Tensor::of_slice (&outputsᵃ) .view((outputsᵃ.len() as i64 / 4, 4));
+
+  let velocity_outputs = outputs.index (&[None, Some (&Tensor::of_slice (&[1i64]))]);
 
   let vs = nn::VarStore::new (Device::Cpu);
   let net = Net::new (&vs.root());
   let mut opt = nn::Adam::default().build (&vs, 0.1)?;
   opt.set_weight_decay (0.01);
   for epoch in 1 ..= 2022 {
+    let a2v_loss = net.a2v.forward (&inputs) .mse_loss (&velocity_outputs, Reduction::Sum);
+    opt.backward_step (&a2v_loss);
+    let a2v_lossᶠ = f32::from (&a2v_loss);
+
     let loss = net.forward (&inputs) .mse_loss (&outputs, Reduction::Sum);
     opt.backward_step (&loss);
-    let lossᶠ = f64::from (&loss);
-    pintln! ("epoch " (epoch) " loss " (lossᶠ));
+    let lossᶠ = f32::from (&loss);
+    pintln! ("epoch " {"{:>4}", epoch} " "
+      " a2v_loss " {"{:<7}", round_to (3, a2v_lossᶠ)}
+      " loss " {"{:<7}", round_to (3, lossᶠ)});
     if lossᶠ < 0.1 {break}}
 
-  for ix in 0..3 {
-    let input = Tensor::of_slice (&inputsᵃ[ix * 5 .. (ix + 1) * 5]);
+  for ix in 0..13 {
+    let input = Tensor::of_slice (&inputsᵃ[ix * 5 .. (ix + 1) * 5]) .view((1, 5));
+    let velocity = net.a2v.forward (&input);
     let prediction = net.forward (&input);
-    pintln! ([&outputsᵃ[ix * 4 .. (ix + 1) * 4]] " vs " [prediction])}
+    pintln! ("velocity expected " {"{:>7.4}", outputsᵃ[ix * 4 + 1]}
+      " a2v " {"{:>7.4}", f32::from (velocity)}
+      " net " {"{:>7.4}", f32::from (prediction.get (0) .get (1))})}
 
   Re::Ok(())}
 
