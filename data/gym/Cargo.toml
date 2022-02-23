@@ -1,0 +1,26 @@
+[package]
+name = "gym"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.dev.package."*"]
+debug = false
+opt-level = 3 
+
+[[bin]]
+name = "cartpole"
+path = "cartpole.rs"
+test = false
+doctest = false
+bench = false
+doc = false
+
+[dependencies]
+fomat-macros = "0.3"
+gstuff = {version = "0.7", features = ["nightly", "re"]}
+serde = "1"
+serde_derive = "1"
+serde_json = "1" 
+tch = "0.6.1"

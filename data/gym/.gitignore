@@ -1,3 +1,10 @@
 
 # observation samples
 /cartpole.json
+
+# rust
+/target
+/Cargo.lock
+
+# VSCode
+/.vscode/tasks.json
