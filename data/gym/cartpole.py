@@ -85,14 +85,14 @@ if '--tf' in sys.argv:  # Inference with TF
 
   model = keras.Model(inputs=tf_inputs, outputs=tf_outputs)
 
-  model.compile(optimizer=keras.optimizers.RMSprop(), loss=keras.losses.MeanSquaredError())
+  model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.1), loss=keras.losses.MeanSquaredError())
 
   _, inputs, outputs = load_inputs()
   inputs = np.vstack(inputs).astype('float32')
   outputs = np.vstack(outputs).astype('float32')
 
   # https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit
-  history = model.fit(inputs[3:], outputs[3:], validation_split=0.01, epochs=2)
+  history = model.fit(inputs[3:], outputs[3:], validation_split=0.01, epochs=2022)
 
   predictions = model.predict(inputs)
   log(outputs[0], '-', predictions[0])
@@ -136,3 +136,29 @@ if '--neat' in sys.argv:  # Inference with NEAT
       log(f"output_selection {output_selection} expected {expected} predicted {floorʹ(prediction[0])}")
       if 32 < count:
         break
+
+if '--pgm' in sys.argv:  # Inference with PGM
+  import pandas as pd
+  from pgmpy.estimators import MaximumLikelihoodEstimator
+  from pgmpy.models import BayesianNetwork
+
+  model = BayesianNetwork([
+      ("Action", "VelocityChange"),
+  ])
+
+  sessions = json.loads(open('cartpole.json', 'r').read())
+  actions, veloΔ = [], []
+  for acs, obs in sessions:
+    for j in range(1, len(obs)):
+      actions.append(acs[j])
+      veloΔ.append(floorʹ(obs[j][1] - obs[j - 1][1]))
+
+  data = {'Action': actions, 'VelocityChange': veloΔ}
+  data = pd.DataFrame(data=data)
+
+  model.fit(data=data, estimator=MaximumLikelihoodEstimator)
+  print(model.get_cpds("VelocityChange"))
+
+if __name__ == '__main__' and not '--pgm' in sys.argv:
+  import os
+  os.system('wsl python cartpole.py --pgm')
