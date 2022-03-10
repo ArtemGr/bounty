@@ -246,8 +246,43 @@ fn adabelief() -> Re<()>{
   pintln! ("Converged in " (t) " steps; " [=θ]);
   Re::Ok(())}
 
+fn eadam() -> Re<()> {
+  // cf. https://arxiv.org/abs/2011.02150 EAdam Optimizer: How ε Impact Adam
+  fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
+  fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
+
+  let α = 0.001;
+  let β1 = 0.9;
+  let β2 = 0.999;
+  let ε: f32 = 0.001;
+  let mut m: f32 = 0.;
+  let mut v: f32 = 0.;
+  let mut t = 0;
+  let mut θ: f32 = 0.0;
+
+  let mut lossᵖ = loss (θ);
+  let mut g = ε;
+
+  loop {
+    t += 1;
+    m = β1 * m + (1. - β1) * g;
+    v = β2 * v + (1. - β2) * g .powi (2);
+    v += ε;
+    let mˆ = m / (1. - β1 .powi (t));
+    let vˆ = v / (1. - β2 .powi (t));
+    let θᵗ = θ - α * mˆ / vˆ.sqrt();
+    let lossᵗ = loss (θᵗ);
+    g = dloss (lossᵗ, lossᵖ, θᵗ - θ);
+    θ = θᵗ; lossᵖ = lossᵗ;
+    if lossᵗ < 0.01 {break}  // stop if converged
+    if t % 1000 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=lossᵗ])}}
+
+  pintln! ("Converged in " (t) " steps; " [=θ]);
+  Re::Ok(())}
+
 fn main() {
-  adabelief().unwrap(); return;
-  amsgrad().unwrap(); return;
-  adam2plus2().unwrap(); return;
+  eadam().unwrap(); return;
+  //adabelief().unwrap(); return;
+  //amsgrad().unwrap(); return;
+  //adam2plus2().unwrap(); return;
   mainʹ().unwrap()}
