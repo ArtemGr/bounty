@@ -1,8 +1,8 @@
 #![allow(unknown_lints, uncommon_codepoints, mixed_script_confusables)]
 
-use fomat_macros::pintln;
+use fomat_macros::{fomat, pintln};
 use gstuff::re::Re;
-use gstuff::{round_to, slurp};
+use gstuff::{fail, round_to, slurp};
 use serde_json as json;
 use tch::Tensor;
 use tch::{nn, nn::Module, nn::OptimizerConfig, Device, Reduction};
@@ -119,31 +119,44 @@ fn adam2plus2() -> Re<()> {
   // “The derivative of a function y = f(x) of a variable x is a measure of the rate
   // at which the value y of the function changes with respect to the change of the variable x.”
   // For `a^2` [the known derivative is `2a`](https://en.wikipedia.org/wiki/Derivative#Example).
-  fn dloss (x: f32) -> f32 {2. * (2. - x)}
+  //fn dloss (x: f32) -> f32 {2. * (2. - x)}
   // We might be able to calculate it as the difference between the current and the previous loss.
   // cf. https://en.wikipedia.org/wiki/Numerical_differentiation
+  fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
 
   let α = 0.001;
   let β1 = 0.9;
   let β2 = 0.999;
-  let ε = 0.1;
+  let ε: f32 = 0.1;
   let mut m = 0.0;
   let mut v = 0.0;
   let mut t = 0;
-  let mut θ = 0f32;
+  let mut θ: f32 = 0.0;
+
+  let mut lossᵖ = loss (θ);
+  let mut g = ε;
 
   loop {
     t += 1;
 
-    let g = -dloss (θ);
     m = β1 * m + (1. - β1) * g;
     v = β2 * v + (1. - β2) * g .powi (2);
+
     let mˆ = m / (1. - β1 .powi (t));
+    if mˆ.is_nan() {fail! ("mˆ NaN")}
+
     let vˆ = v / (1. - β2 .powi (t));
-    θ = θ - α * mˆ / (vˆ.sqrt() + ε);
-    let loss = loss (θ);
-    if loss < 0.01 {break}  // stop if converged
-    if t % 1000 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=loss])}}
+    if vˆ.is_nan() {fail! ("vˆ NaN")}
+
+    let θᵗ = θ - α * mˆ / (vˆ.sqrt() + ε);
+    if θᵗ.is_nan() {fail! ("θ NaN")}
+
+    let lossᵗ = loss (θᵗ);
+    g = dloss (lossᵗ, lossᵖ, θᵗ - θ);
+    θ = θᵗ; lossᵖ = lossᵗ;
+
+    if lossᵗ < 0.01 {break}  // stop if converged
+    if t % 1000 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=lossᵗ])}}
 
   pintln! ("Converged in " (t) " steps; " [=θ]);
   Re::Ok(())}
