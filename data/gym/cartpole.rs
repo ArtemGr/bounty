@@ -97,11 +97,13 @@ fn mainʹ() -> Re<()> {
   pintln! ("--- a2v bias ---");
   net.a2v.bias.print();
 
-  // ⌥ Train the velocity formula directly with Adam,
+  // ⌥ train the velocity formula directly with Adam,
   // velocity = (previous_velocity * 1.0010 + action * 0.3900) - 0.1950
   // velocity = previous_velocity + action ? 0.2 : -0.2
 
   Re::Ok(())}
+
+// ⌥ implement a version of Adam that runs on a mutable slice of parameters, and a minimised closure
 
 fn adam2plus2() -> Re<()> {
   // cf. https://arxiv.org/pdf/1412.6980.pdf Adam: a method for stochastic optimization
@@ -110,18 +112,21 @@ fn adam2plus2() -> Re<()> {
   // Most of the time the function we want to minimize is the loss function:
   // the smaller the loss, the better the fitness of the parameters picked (aka model).
   // For “2 + x = 4” the loss function would be “(2 - x) ^ 2”.
-  fn loss (x: f32) -> f32 {(2. - x) .powf (2.)}
+  fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
 
   // “The gradient always points in the direction of steepest increase in the loss function.”
   // In Autograd the gradient is calculated automatically together with the loss
   // and is consequently reused by the optimization algorithm.
+  //
   // Another popular option seems to be in implementing the gradient as derivative of the loss.
   // “The derivative of a function y = f(x) of a variable x is a measure of the rate
   // at which the value y of the function changes with respect to the change of the variable x.”
   // For `a^2` [the known derivative is `2a`](https://en.wikipedia.org/wiki/Derivative#Example).
-  //fn dloss (x: f32) -> f32 {2. * (2. - x)}
-  // We might be able to calculate it as the difference between the current and the previous loss.
-  // cf. https://en.wikipedia.org/wiki/Numerical_differentiation
+  // fn dloss (x: f32) -> f32 {2. * (2. - x)}
+  //
+  // Optimisation will be more genetic, however, if we would treat the loss function as a black box,
+  // calculating the gradient from the difference between the current and the previous loss.
+  // cf. https://en.wikipedia.org/wiki/Numerical_differentiation; fʹ(x) = (f(x+h) - f(x)) / h
   fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
 
   let α = 0.001;
@@ -138,7 +143,6 @@ fn adam2plus2() -> Re<()> {
 
   loop {
     t += 1;
-
     m = β1 * m + (1. - β1) * g;
     v = β2 * v + (1. - β2) * g .powi (2);
 
@@ -161,6 +165,42 @@ fn adam2plus2() -> Re<()> {
   pintln! ("Converged in " (t) " steps; " [=θ]);
   Re::Ok(())}
 
+fn amsgrad() -> Re<()> {
+  // cf. https://openreview.net/pdf?id=ryQu7f-RZ On the convergence of Adam and Beyond
+  fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
+  fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
+
+  let α = 0.001;
+  let β1 = 0.9;
+  let β2 = 0.999;
+  let ε: f32 = 0.1;
+  let mut m = 0.;
+  let mut v: f32 = 0.;
+  let mut vˆ: f32 = 0.;
+  let mut t = 0;
+  let mut θ: f32 = 0.;
+
+  let mut lossᵖ = loss (θ);
+  let mut g = ε;
+
+  loop {
+    t += 1;
+    m = β1 * m + (1. - β1) * g;
+    v = β2 * v + (1. - β2) * g .powi (2);
+    vˆ = vˆ .max (v);
+    let θʹ = θ - α * m / vˆ.sqrt();
+
+    let lossᵗ = loss (θʹ);
+    g = dloss (lossᵗ, lossᵖ, θʹ - θ);
+    θ = θʹ; lossᵖ = lossᵗ;
+
+    if lossᵗ < 0.001 {break}  // stop if converged
+    if t % 1000 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=lossᵗ])}}
+
+  pintln! ("Converged in " (t) " steps; " [=θ]);
+  Re::Ok(())}
+
 fn main() {
+  amsgrad().unwrap(); return;
   adam2plus2().unwrap(); return;
   mainʹ().unwrap()}
