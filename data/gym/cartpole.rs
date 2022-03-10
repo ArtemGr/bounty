@@ -133,8 +133,8 @@ fn adam2plus2() -> Re<()> {
   let β1 = 0.9;
   let β2 = 0.999;
   let ε: f32 = 0.1;
-  let mut m = 0.0;
-  let mut v = 0.0;
+  let mut m: f32 = 0.;
+  let mut v: f32 = 0.;
   let mut t = 0;
   let mut θ: f32 = 0.0;
 
@@ -200,7 +200,54 @@ fn amsgrad() -> Re<()> {
   pintln! ("Converged in " (t) " steps; " [=θ]);
   Re::Ok(())}
 
+fn adabelief() -> Re<()>{
+  // cf. https://arxiv.org/pdf/2010.07468.pdf AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients
+  // https://www.youtube.com/playlist?list=PL7KkG3n9bER6YmMLrKJ5wocjlvP7aWoOu AdaBelief Optimizer, Toy examples
+  fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
+  fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
+  let α = 0.001;
+  let β1 = 0.9;
+  let β2 = 0.999;
+  let ε: f32 = 0.01;
+  let mut m: f32 = 0.;
+  let mut s: f32 = 0.;
+  let mut t = 0;
+  let mut θ: f32 = 0.0;
+
+  let mut lossᵖ = loss (θ);
+  let mut g = ε;
+
+  loop {
+    t += 1;
+    m = β1 * m + (1. - β1) * g;
+    s = β2 * s + (1. - β2) * (g - m) .powi (2);  // + ε
+
+    let mˆ = m / (1. - β1 .powi (t));
+    if mˆ.is_nan() {fail! ("mˆ NaN")}
+
+    // “Note that an extra ε is added to sᵗ during bias-correction, in order to
+    // better match the assumption that sᵗ is bounded below (the lower bound is at least ε).”
+    let sˆ = (s + ε) / (1. - β2 .powi (t));
+    if sˆ.is_nan() {fail! ("sˆ NaN")}
+
+    // “Intuitively, 1/√s is the “belief” in the observation: viewing mᵗ as the prediction of the gradient,
+    // if gᵗ deviates much from mᵗ, we have weak belief in gᵗ, and take a small step;
+    // if gᵗ is close to the prediction mᵗ, we have a strong belief in gᵗ, and take a large step.”
+    let θᵗ = θ - α * mˆ / (sˆ.sqrt() + ε);
+    if θᵗ.is_nan() {fail! ("θ NaN")}
+
+    let lossᵗ = loss (θᵗ);
+    g = dloss (lossᵗ, lossᵖ, θᵗ - θ);
+    θ = θᵗ; lossᵖ = lossᵗ;
+
+    if lossᵗ < 0.01 {break}  // stop if converged
+    if t % 100 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=m] ' ' [=s] ' ' [=lossᵗ])}}
+
+  pintln! ("Converged in " (t) " steps; " [=θ]);
+  Re::Ok(())}
+
 fn main() {
+  adabelief().unwrap(); return;
   amsgrad().unwrap(); return;
   adam2plus2().unwrap(); return;
   mainʹ().unwrap()}
