@@ -1,4 +1,4 @@
-#![allow(unknown_lints, uncommon_codepoints)]
+#![allow(unknown_lints, uncommon_codepoints, mixed_script_confusables)]
 
 use fomat_macros::pintln;
 use gstuff::re::Re;
@@ -97,7 +97,57 @@ fn mainʹ() -> Re<()> {
   pintln! ("--- a2v bias ---");
   net.a2v.bias.print();
 
+  // ⌥ Train the velocity formula directly with Adam,
+  // velocity = (previous_velocity * 1.0010 + action * 0.3900) - 0.1950
+  // velocity = previous_velocity + action ? 0.2 : -0.2
+
+  Re::Ok(())}
+
+fn adam2plus2() -> Re<()> {
+  // cf. https://arxiv.org/pdf/1412.6980.pdf Adam: a method for stochastic optimization
+
+  // Adam is a “mathematical optimization” with the goal of minimizing a function.
+  // Most of the time the function we want to minimize is the loss function:
+  // the smaller the loss, the better the fitness of the parameters picked (aka model).
+  // For “2 + x = 4” the loss function would be “(2 - x) ^ 2”.
+  fn loss (x: f32) -> f32 {(2. - x) .powf (2.)}
+
+  // “The gradient always points in the direction of steepest increase in the loss function.”
+  // In Autograd the gradient is calculated automatically together with the loss
+  // and is consequently reused by the optimization algorithm.
+  // Another popular option seems to be in implementing the gradient as derivative of the loss.
+  // “The derivative of a function y = f(x) of a variable x is a measure of the rate
+  // at which the value y of the function changes with respect to the change of the variable x.”
+  // For `a^2` [the known derivative is `2a`](https://en.wikipedia.org/wiki/Derivative#Example).
+  fn dloss (x: f32) -> f32 {2. * (2. - x)}
+  // We might be able to calculate it as the difference between the current and the previous loss.
+  // cf. https://en.wikipedia.org/wiki/Numerical_differentiation
+
+  let α = 0.001;
+  let β1 = 0.9;
+  let β2 = 0.999;
+  let ε = 0.1;
+  let mut m = 0.0;
+  let mut v = 0.0;
+  let mut t = 0;
+  let mut θ = 0f32;
+
+  loop {
+    t += 1;
+
+    let g = -dloss (θ);
+    m = β1 * m + (1. - β1) * g;
+    v = β2 * v + (1. - β2) * g .powi (2);
+    let mˆ = m / (1. - β1 .powi (t));
+    let vˆ = v / (1. - β2 .powi (t));
+    θ = θ - α * mˆ / (vˆ.sqrt() + ε);
+    let loss = loss (θ);
+    if loss < 0.01 {break}  // stop if converged
+    if t % 1000 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=loss])}}
+
+  pintln! ("Converged in " (t) " steps; " [=θ]);
   Re::Ok(())}
 
 fn main() {
+  adam2plus2().unwrap(); return;
   mainʹ().unwrap()}
