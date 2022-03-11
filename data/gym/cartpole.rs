@@ -112,7 +112,7 @@ fn adam2plus2() -> Re<()> {
   // Most of the time the function we want to minimize is the loss function:
   // the smaller the loss, the better the fitness of the parameters picked (aka model).
   // For “2 + x = 4” the loss function would be “(2 - x) ^ 2”.
-  fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
+  // fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
 
   // “The gradient always points in the direction of steepest increase in the loss function.”
   // In Autograd the gradient is calculated automatically together with the loss
@@ -124,10 +124,10 @@ fn adam2plus2() -> Re<()> {
   // For `a^2` [the known derivative is `2a`](https://en.wikipedia.org/wiki/Derivative#Example).
   // fn dloss (x: f32) -> f32 {2. * (2. - x)}
   //
-  // Optimisation will be more genetic, however, if we would treat the loss function as a black box,
-  // calculating the gradient from the difference between the current and the previous loss.
-  // cf. https://en.wikipedia.org/wiki/Numerical_differentiation; fʹ(x) = (f(x+h) - f(x)) / h
-  fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
+  // (For gradient descent) it is also convenient to use “1/2 Σ (y - prediction (x))²” as the loss function
+  // becase the twos then cancel each other, giving derivative of `Σ (y - prediction (x)) (xⁱ)`.
+  // To keep things simple we can drop the loss function in favor of per-parameter derivatives.
+  fn dloss (x: f32) -> f32 {x - 2.}
 
   let α = 0.001;
   let β1 = 0.9;
@@ -138,11 +138,9 @@ fn adam2plus2() -> Re<()> {
   let mut t = 0;
   let mut θ: f32 = 0.0;
 
-  let mut lossᵖ = loss (θ);
-  let mut g = ε;
-
   loop {
     t += 1;
+    let g = dloss (θ);
     m = β1 * m + (1. - β1) * g;
     v = β2 * v + (1. - β2) * g .powi (2);
 
@@ -152,15 +150,11 @@ fn adam2plus2() -> Re<()> {
     let vˆ = v / (1. - β2 .powi (t));
     if vˆ.is_nan() {fail! ("vˆ NaN")}
 
-    let θᵗ = θ - α * mˆ / (vˆ.sqrt() + ε);
-    if θᵗ.is_nan() {fail! ("θ NaN")}
+    θ = θ - α * mˆ / (vˆ.sqrt() + ε);
+    if θ.is_nan() {fail! ("θ NaN")}
 
-    let lossᵗ = loss (θᵗ);
-    g = dloss (lossᵗ, lossᵖ, θᵗ - θ);
-    θ = θᵗ; lossᵖ = lossᵗ;
-
-    if lossᵗ < 0.01 {break}  // stop if converged
-    if t % 1000 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=lossᵗ])}}
+    if g.abs() < 0.01 {break}  // stop if converged
+    if t % 1000 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g])}}
 
   pintln! ("Converged in " (t) " steps; " [=θ]);
   Re::Ok(())}
@@ -168,6 +162,7 @@ fn adam2plus2() -> Re<()> {
 fn amsgrad() -> Re<()> {
   // cf. https://openreview.net/pdf?id=ryQu7f-RZ On the convergence of Adam and Beyond
   fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
+  // cf. https://en.wikipedia.org/wiki/Numerical_differentiation; fʹ(x) = (f(x+h) - f(x)) / h
   fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
 
   let α = 0.001;
@@ -203,8 +198,7 @@ fn amsgrad() -> Re<()> {
 fn adabelief() -> Re<()>{
   // cf. https://arxiv.org/pdf/2010.07468.pdf AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients
   // https://www.youtube.com/playlist?list=PL7KkG3n9bER6YmMLrKJ5wocjlvP7aWoOu AdaBelief Optimizer, Toy examples
-  fn loss (x: f32) -> f32 {(2. - x) .powi (2)}
-  fn dloss (loss1: f32, loss0: f32, h: f32) -> f32 {(loss1 - loss0) / h}
+  fn dloss (x: f32) -> f32 {x - 2.}
   let α = 0.001;
   let β1 = 0.9;
   let β2 = 0.999;
@@ -214,11 +208,9 @@ fn adabelief() -> Re<()>{
   let mut t = 0;
   let mut θ: f32 = 0.0;
 
-  let mut lossᵖ = loss (θ);
-  let mut g = ε;
-
   loop {
     t += 1;
+    let g = dloss (θ);
     m = β1 * m + (1. - β1) * g;
     s = β2 * s + (1. - β2) * (g - m) .powi (2);  // + ε
 
@@ -233,15 +225,50 @@ fn adabelief() -> Re<()>{
     // “Intuitively, 1/√s is the “belief” in the observation: viewing mᵗ as the prediction of the gradient,
     // if gᵗ deviates much from mᵗ, we have weak belief in gᵗ, and take a small step;
     // if gᵗ is close to the prediction mᵗ, we have a strong belief in gᵗ, and take a large step.”
-    let θᵗ = θ - α * mˆ / (sˆ.sqrt() + ε);
-    if θᵗ.is_nan() {fail! ("θ NaN")}
+    θ = θ - α * mˆ / (sˆ.sqrt() + ε);
+    if θ.is_nan() {fail! ("θ NaN")}
 
-    let lossᵗ = loss (θᵗ);
-    g = dloss (lossᵗ, lossᵖ, θᵗ - θ);
-    θ = θᵗ; lossᵖ = lossᵗ;
+    if g.abs() < 0.01 {break}  // stop if converged
+    if t % 100 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=m] ' ' [=s])}}
 
-    if lossᵗ < 0.01 {break}  // stop if converged
-    if t % 100 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=m] ' ' [=s] ' ' [=lossᵗ])}}
+  pintln! ("Converged in " (t) " steps; " [=θ]);
+  Re::Ok(())}
+
+fn adabelief2() -> Re<()>{
+  // cf. https://arxiv.org/pdf/2010.07468.pdf AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients
+  // https://www.youtube.com/playlist?list=PL7KkG3n9bER6YmMLrKJ5wocjlvP7aWoOu AdaBelief Optimizer, Toy examples
+  let α = 0.001;
+  let β1 = 0.9;
+  let β2 = 0.999;
+  let ε: f32 = 0.01;
+  let mut m: [f32; 2] = [0., 0.];
+  let mut s: [f32; 2] = [0., 0.];
+  let mut t = 0;
+  let mut θ: [f32; 2] = [0., 0.];
+
+  loop {
+    t += 1;
+
+    let g: [f32; 2] = [θ[0] - 2., θ[1] - -3.];
+
+    m[0] = β1 * m[0] + (1. - β1) * g[0];
+    m[1] = β1 * m[1] + (1. - β1) * g[1];
+    s[0] = β2 * s[0] + (1. - β2) * (g[0] - m[0]) .powi (2);
+    s[1] = β2 * s[1] + (1. - β2) * (g[1] - m[1]) .powi (2);
+
+    let mut mˆ: [f32; 2] = [0., 0.];
+    mˆ[0] = m[0] / (1. - β1 .powi (t));
+    mˆ[1] = m[1] / (1. - β1 .powi (t));
+
+    let mut sˆ: [f32; 2] = [0., 0.];
+    sˆ[0] = (s[0] + ε) / (1. - β2 .powi (t));
+    sˆ[1] = (s[1] + ε) / (1. - β2 .powi (t));
+
+    θ[0] = θ[0] - α * mˆ[0] / (sˆ[0].sqrt() + ε);
+    θ[1] = θ[1] - α * mˆ[1] / (sˆ[1].sqrt() + ε);
+
+    if g[0].abs() < 0.001 && g[1].abs() < 0.001 {break}  // stop if converged
+    if t % 500 == 0 {pintln! ([=t] ' ' [=θ] ' ' [=g] ' ' [=m] ' ' [=s])}}
 
   pintln! ("Converged in " (t) " steps; " [=θ]);
   Re::Ok(())}
@@ -281,8 +308,9 @@ fn eadam() -> Re<()> {
   Re::Ok(())}
 
 fn main() {
+  adabelief2().unwrap(); return;
+  adabelief().unwrap(); return;
+  adam2plus2().unwrap(); return;
   eadam().unwrap(); return;
-  //adabelief().unwrap(); return;
-  //amsgrad().unwrap(); return;
-  //adam2plus2().unwrap(); return;
+  amsgrad().unwrap(); return;
   mainʹ().unwrap()}
