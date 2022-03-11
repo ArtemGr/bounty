@@ -127,7 +127,7 @@ fn adam2plus2() -> Re<()> {
   // (For gradient descent) it is also convenient to use “1/2 Σ (y - prediction (x))²” as the loss function
   // becase the twos then cancel each other, giving derivative of `Σ (y - prediction (x)) (xⁱ)`.
   // To keep things simple we can drop the loss function in favor of per-parameter derivatives.
-  fn dloss (x: f32) -> f32 {x - 2.}
+  fn dloss (x: f32) -> f32 {2. - x}
 
   let α = 0.001;
   let β1 = 0.9;
@@ -140,7 +140,7 @@ fn adam2plus2() -> Re<()> {
 
   loop {
     t += 1;
-    let g = dloss (θ);
+    let g = -dloss (θ);
     m = β1 * m + (1. - β1) * g;
     v = β2 * v + (1. - β2) * g .powi (2);
 
@@ -198,7 +198,7 @@ fn amsgrad() -> Re<()> {
 fn adabelief() -> Re<()>{
   // cf. https://arxiv.org/pdf/2010.07468.pdf AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients
   // https://www.youtube.com/playlist?list=PL7KkG3n9bER6YmMLrKJ5wocjlvP7aWoOu AdaBelief Optimizer, Toy examples
-  fn dloss (x: f32) -> f32 {x - 2.}
+  fn dloss (x: f32) -> f32 {2. - x}
   let α = 0.001;
   let β1 = 0.9;
   let β2 = 0.999;
@@ -210,7 +210,7 @@ fn adabelief() -> Re<()>{
 
   loop {
     t += 1;
-    let g = dloss (θ);
+    let g = -dloss (θ);
     m = β1 * m + (1. - β1) * g;
     s = β2 * s + (1. - β2) * (g - m) .powi (2);  // + ε
 
@@ -249,7 +249,8 @@ fn adabelief2() -> Re<()>{
   loop {
     t += 1;
 
-    let g: [f32; 2] = [θ[0] - 2., θ[1] - -3.];
+    // “The gradient descent algorithm takes a step in the direction of the negative gradient”
+    let g: [f32; 2] = [- (2. - θ[0]), - (-3. - θ[1])];
 
     m[0] = β1 * m[0] + (1. - β1) * g[0];
     m[1] = β1 * m[1] + (1. - β1) * g[1];
