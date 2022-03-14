@@ -235,8 +235,6 @@ fn adabelief() -> Re<()>{
   Re::Ok(())}
 
 fn adabelief2() -> Re<()>{
-  // cf. https://arxiv.org/pdf/2010.07468.pdf AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients
-  // https://www.youtube.com/playlist?list=PL7KkG3n9bER6YmMLrKJ5wocjlvP7aWoOu AdaBelief Optimizer, Toy examples
   let α = 0.001;
   let β1 = 0.9;
   let β2 = 0.999;
@@ -309,9 +307,9 @@ fn eadam() -> Re<()> {
   Re::Ok(())}
 
 fn main() {
-  adabelief2().unwrap(); return;
-  adabelief().unwrap(); return;
-  adam2plus2().unwrap(); return;
-  eadam().unwrap(); return;
-  amsgrad().unwrap(); return;
+  // adabelief2().unwrap();
+  // adabelief().unwrap();
+  // adam2plus2().unwrap();
+  // eadam().unwrap();
+  // amsgrad().unwrap();
   mainʹ().unwrap()}

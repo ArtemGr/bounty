@@ -1,4 +1,1 @@
-# Cython artefacts
-/matrix.c
-/matrix.*.pyd
-/build
+# nop
