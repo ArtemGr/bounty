@@ -57,7 +57,6 @@ def loss(params, inputs, targets):
   return -jnp.mean(preds * targets)
 
 
-#@jit
 #def update(params, x, y):
 #  grads = grad(loss)(params, x, y)
 #  step_size = 0.01
@@ -68,7 +67,7 @@ def adabeliefʹ(t, g, m, s, θ):
   # cf. https://arxiv.org/pdf/2010.07468.pdf AdaBelief Optimizer: Adapting Stepsizes by the Belief in Observed Gradients
   # https://www.youtube.com/playlist?list=PL7KkG3n9bER6YmMLrKJ5wocjlvP7aWoOu AdaBelief Optimizer, Toy examples
 
-  α = 0.1
+  α = 0.03
   β1 = 0.9
   β2 = 0.999
   ε = 0.01
@@ -92,7 +91,6 @@ def adabeliefʹ(t, g, m, s, θ):
   return m, s, θ
 
 
-@jit
 def adabelief(t, m, s, params, x, y):
   grads = grad(loss)(params, x, y)
   wbs = []
@@ -107,16 +105,17 @@ def adabelief(t, m, s, params, x, y):
   return ms, ss, wbs
 
 
-@jit
 def accuracy(params, inputs, targets):
   predicted_class = jnp.argmax(batched_predict(params, inputs), axis=1)
   return jnp.mean(predicted_class == targets)
 
 
-@partial(jit, static_argnums=1)
 def one_hot(x, k):
   # NB: Reverse of one_hot is argmax, https://numpy.org/doc/stable/reference/generated/numpy.argmax.html
-  return jnp.array([[k == x for k in range(k)] for x in x], dtype=jnp.float32)
+  # 2022-03: For comprehension is more readable but takes a lot of time to trace and compile
+  #return jnp.array([[k == x for k in range(k)] for x in x], dtype=jnp.float32)
+  # 2022-03: This arcane trick compiles much faster, but there is still a type mismatch at runtime
+  return jnp.array(x[:, None] == jnp.arange(k), dtype=jnp.float32)
 
 
 if __name__ == '__main__':
@@ -147,7 +146,18 @@ if __name__ == '__main__':
   preds = batched_predict(params, inputs)
   assert preds.shape == (batch_size, layer_sizes[-1])
 
+  log('compiling test accuracy…')
+  accuracyᵔ = jit(accuracy).lower(params, x_test, y_test).compile()
+  log('compiling train accuracy…')
+  accuracyᵕ = jit(accuracy).lower(params, x_train, y_train).compile()
+  #log('compiling one_hot…')
+  #one_hotˉ = jit(one_hot, static_argnums=1).lower(y_train[:batch_size], layer_sizes[-1]).compile()
+  log('compiling adabelief…')
+  y = one_hot(y_train[:batch_size], layer_sizes[-1])
+  adabeliefˉ = jit(adabelief).lower(1, m, s, params, x_train[:batch_size], y).compile()
+
   epochs = 314
+  log(f"training for {epochs} epochs…")
   batches = random.randint(rkey, (epochs,), 0, len(x_train) - batch_size)
   for epoch, batch_ofs in enumerate(batches):
     x = x_train[batch_ofs:batch_ofs + batch_size]
@@ -155,10 +165,11 @@ if __name__ == '__main__':
 
     y = one_hot(y_train[batch_ofs:batch_ofs + batch_size], layer_sizes[-1])
     start = time.time()
-    m, s, params = adabelief(epoch, m, s, params, x, y)
+    #params = update(params, x, y)
+    m, s, params = adabeliefˉ(epoch, m, s, params, x, y)
     delta = floorʹ(time.time() - start)
 
     if epoch % 10 == 0 or epoch == epochs - 1:
-      train_acc = floorʹ(accuracy(params, x_train, y_train))
-      test_acc = floorʹ(accuracy(params, x_test, y_test))
+      train_acc = floorʹ(accuracyᵕ(params, x_train, y_train), 1)
+      test_acc = floorʹ(accuracyᵔ(params, x_test, y_test), 1)
       log(f"Epoch {epoch}; {delta}s; accuracy: train {train_acc}, test {test_acc}")
