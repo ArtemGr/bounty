@@ -22,8 +22,9 @@ if '--spin' in sys.argv:
     actions = []
     observations = []
     for frame in range(234):
-      #env.render()
-      #time.sleep(.02)
+      if '--render' in sys.argv:
+        env.render()
+        time.sleep(.02)
 
       action = int(env.action_space.sample())
       observation, reward, done, info = env.step(action)
@@ -70,6 +71,19 @@ if '--elm' in sys.argv:  # Inference with ELM
 
   mse = np.square(np.subtract(outputs, predictions)).mean()
   log(floorʹ(mse))
+
+if '--xgboost' in sys.argv:  # inference with xgboost
+  import xgboost as xgb
+  _, inputs, outputs = load_inputs()
+  velocity = [o[1] for o in outputs]
+  param = {}
+  dtrain = xgb.DMatrix(inputs, label=velocity)
+  best = xgb.train(param, dtrain, evals=[(dtrain, 'train')], num_boost_round=31)
+  for count, (input, expected) in enumerate(zip(inputs, outputs)):
+    prediction = best.predict(xgb.DMatrix([input]))[0]
+    log(f"prediction {prediction} expected {expected[1]}")
+    if 32 < count:
+      break
 
 if '--tf' in sys.argv:  # Inference with TF
   from tensorflow import keras
@@ -159,6 +173,5 @@ if '--pgm' in sys.argv:  # Inference with PGM
   model.fit(data=data, estimator=MaximumLikelihoodEstimator)
   print(model.get_cpds("VelocityChange"))
 
-if __name__ == '__main__' and not '--pgm' in sys.argv:
-  import os
-  os.system('wsl python cartpole.py --pgm')
+if __name__ == '__main__':
+  pass
