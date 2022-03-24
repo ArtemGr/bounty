@@ -72,6 +72,9 @@ def plotio(inputs, outputs, xs):
       a[ay][ax] = '\033[34m*\033[0m'
     print('\n'.join(''.join(y) for y in a))
 
+  gv = xgb.to_graphviz(best)
+  open('plotio.pdf', 'wb').write(gv.pipe())
+
 
 def perfect_symmetry():
   '''

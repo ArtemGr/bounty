@@ -76,14 +76,17 @@ if '--xgboost' in sys.argv:  # inference with xgboost
   import xgboost as xgb
   _, inputs, outputs = load_inputs()
   velocity = [o[1] for o in outputs]
-  param = {}
+  param = {'max_depth': 3}
   dtrain = xgb.DMatrix(inputs, label=velocity)
-  best = xgb.train(param, dtrain, evals=[(dtrain, 'train')], num_boost_round=31)
+  best = xgb.train(param, dtrain, evals=[(dtrain, 'train')], num_boost_round=314)
   for count, (input, expected) in enumerate(zip(inputs, outputs)):
     prediction = best.predict(xgb.DMatrix([input]))[0]
     log(f"prediction {prediction} expected {expected[1]}")
     if 32 < count:
       break
+
+  gv = xgb.to_graphviz(best)
+  open('velocity.pdf', 'wb').write(gv.pipe())
 
 if '--tf' in sys.argv:  # Inference with TF
   from tensorflow import keras
