@@ -2,3 +2,4 @@ git+https://gist.github.com/bf91613a021a536c7ce16cdba9168604.git
 jax
 keras
 numpy
+xgboost

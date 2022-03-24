@@ -119,11 +119,13 @@ def one_hot(x, k):
 
 
 if __name__ == '__main__':
+  log('allocating parameters…')
   layer_sizes = [784, 512, 512, 10]
   rkey = random.PRNGKey(1)
   params = init_network_params(layer_sizes, rkey)
   m, s = init_ms(layer_sizes), init_ms(layer_sizes)
 
+  log('loading MNIST…')
   (x_train, y_train), (x_test, y_test) = mnist.load_data()
   assert os.path.exists(os.path.expanduser('~/.keras/datasets/mnist.npz'))
 
@@ -146,6 +148,8 @@ if __name__ == '__main__':
   preds = batched_predict(params, inputs)
   assert preds.shape == (batch_size, layer_sizes[-1])
 
+  y_ones = one_hot(y_train, layer_sizes[-1])
+
   log('compiling test accuracy…')
   accuracyᵔ = jit(accuracy).lower(params, x_test, y_test).compile()
   log('compiling train accuracy…')
@@ -153,8 +157,7 @@ if __name__ == '__main__':
   #log('compiling one_hot…')
   #one_hotˉ = jit(one_hot, static_argnums=1).lower(y_train[:batch_size], layer_sizes[-1]).compile()
   log('compiling adabelief…')
-  y = one_hot(y_train[:batch_size], layer_sizes[-1])
-  adabeliefˉ = jit(adabelief).lower(1, m, s, params, x_train[:batch_size], y).compile()
+  adabeliefˉ = jit(adabelief).lower(1, m, s, params, x_train[:batch_size], y_ones[:batch_size]).compile()
 
   epochs = 314
   log(f"training for {epochs} epochs…")
@@ -163,7 +166,7 @@ if __name__ == '__main__':
     x = x_train[batch_ofs:batch_ofs + batch_size]
     assert len(x) == batch_size
 
-    y = one_hot(y_train[batch_ofs:batch_ofs + batch_size], layer_sizes[-1])
+    y = y_ones[batch_ofs:batch_ofs + batch_size]
     start = time.time()
     #params = update(params, x, y)
     m, s, params = adabeliefˉ(epoch, m, s, params, x, y)
