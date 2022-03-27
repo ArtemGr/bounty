@@ -5,14 +5,11 @@
 
 import os
 import time
-from functools import partial
-
-from keras.datasets import mnist
-from llog import floorʹ, log
 
 import jax.numpy as jnp
 from jax import grad, jit, random, vmap
 from jax.scipy.special import logsumexp
+from llog import floorʹ, log
 
 
 def random_layer_params(fr, to, key, scale=1e-2):
@@ -91,7 +88,7 @@ def adabeliefʹ(t, g, m, s, θ):
   return m, s, θ
 
 
-def adabelief(t, m, s, params, x, y):
+def adabelief(loss, t, m, s, params, x, y):
   grads = grad(loss)(params, x, y)
   wbs = []
   ms = []
@@ -119,6 +116,8 @@ def one_hot(x, k):
 
 
 if __name__ == '__main__':
+  from keras.datasets import mnist
+
   log('allocating parameters…')
   layer_sizes = [784, 512, 512, 10]
   rkey = random.PRNGKey(1)
@@ -157,7 +156,10 @@ if __name__ == '__main__':
   #log('compiling one_hot…')
   #one_hotˉ = jit(one_hot, static_argnums=1).lower(y_train[:batch_size], layer_sizes[-1]).compile()
   log('compiling adabelief…')
-  adabeliefˉ = jit(adabelief).lower(1, m, s, params, x_train[:batch_size], y_ones[:batch_size]).compile()
+  adabeliefˉ = jit(
+      adabelief,
+      static_argnums=0,
+  ).lower(loss, 1, m, s, params, x_train[:batch_size], y_ones[:batch_size]).compile()
 
   epochs = 314
   log(f"training for {epochs} epochs…")

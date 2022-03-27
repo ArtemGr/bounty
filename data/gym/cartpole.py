@@ -6,7 +6,7 @@ import sys
 import time
 
 import numpy as np
-from llog import floora, floorʹ, log
+from llog import floora, floorʹ, log, plot
 
 if '--spin' in sys.argv:
   import gym
@@ -52,10 +52,12 @@ def load_inputs():
   return sessions, inputs, outputs
 
 
-if '--elm' in sys.argv:  # Inference with ELM
-  sys.path.insert(0, '..')
-  import elm.elm as elm
-  sys.path.remove('..')
+def elm():
+  '''infer with ELM'''
+
+  sys.path.insert(0, '../elm')
+  import elm
+  sys.path.remove('../elm')
 
   # infer: elm (stateⱼ₋₁, actionⱼ) = stateⱼ
   _, inputs, outputs = load_inputs()
@@ -72,7 +74,62 @@ if '--elm' in sys.argv:  # Inference with ELM
   mse = np.square(np.subtract(outputs, predictions)).mean()
   log(floorʹ(mse))
 
-if '--xgboost' in sys.argv:  # inference with xgboost
+
+def jax():
+  '''infer with JAX'''
+
+  import jax
+  import jax.numpy as jnp
+
+  sys.path.insert(0, '../math')
+  import jax_adabelief as jb
+  sys.path.remove('../math')
+
+  def predict(params, input):
+    previous_velocity, action = input[1], input[4]
+    inc = jax.lax.cond(action, lambda: params[0], lambda: -params[0])
+    velocity = previous_velocity + inc
+    return velocity
+
+  batched_predict = jax.vmap(predict, in_axes=(None, 0))
+
+  def loss(params, xs, ys):
+    pred = batched_predict(params, xs)
+    return jnp.mean((pred - ys)**2)
+
+  _, inputs, outputs = load_inputs()
+  xs = jnp.array(inputs)
+  ys = jnp.array([o[1] for o in outputs])
+
+  def plot_loss():
+    lossˉ = jax.jit(loss).lower(jnp.array([0.1]), xs, ys).compile()
+    a = [[' ' for x in range(111)] for y in range(5)]
+    pxs, pys = [], []
+    for p in range(9):
+      pxs.append(p / 10)
+      pys.append(lossˉ(jnp.array([p / 10]), xs, ys))
+    map = plot(a, pxs, pys)
+    print('\n'.join(''.join(y) for y in a))
+
+  plot_loss()
+
+  m = jnp.zeros(1)
+  s = jnp.zeros(1)
+  rkey = jax.random.PRNGKey(1)
+  params = jax.random.normal(rkey, (1,))
+
+  def optimise(epoch, m, s, params, xs, ys):
+    lossʹ, grads = jax.value_and_grad(loss)(params, xs, ys)
+    m, s, params = jb.adabeliefʹ(epoch, grads, m, s, params)
+    return m, s, params, lossʹ
+
+  optimiseˉ = jax.jit(optimise).lower(1, m, s, params, xs, ys).compile()
+  for epoch in range(314):
+    m, s, params, lossʹ = optimiseˉ(epoch, m, s, params, xs, ys)
+    log(epoch, params, np.format_float_positional(lossʹ))
+
+
+if '--xgboost' in sys.argv:  # infer with xgboost
   import xgboost as xgb
   _, inputs, outputs = load_inputs()
   velocity = [o[1] for o in outputs]
@@ -177,4 +234,9 @@ if '--pgm' in sys.argv:  # Inference with PGM
   print(model.get_cpds("VelocityChange"))
 
 if __name__ == '__main__':
-  pass
+  if '--elm' in sys.argv:
+    elm()
+  elif '--jax' in sys.argv:
+    jax()
+  else:
+    jax()
