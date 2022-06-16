@@ -24,8 +24,8 @@ chars_to_csv = {
 def csesc (fr):
     result = []
     for c in fr:
-        result.append(chars_to_csv.get(c, c))
-    return "".join(result)
+        result.append (chars_to_csv.get (c, c))
+    return "".join (result)
 
 
 csv_to_chars = ["\x01", "\x00", "\n", "\r", "\"", ","]
@@ -38,14 +38,14 @@ def csunesc (fr):
         if encoded:
             encoded = False
             if c < "\u0007":
-                result.append(csv_to_chars [ord (c) - 1])
+                result.append (csv_to_chars [ord (c) - 1])
             else:
-                result.append("\u0001" + c)
+                result.append ("\u0001" + c)
         elif c == "\u0001":
             encoded = True
         else:
-            result.append(c)
-    return "".join(result)
+            result.append (c)
+    return "".join (result)
             
 
 if __name__ == '__main__':
