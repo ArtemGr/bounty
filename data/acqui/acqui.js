@@ -97,6 +97,16 @@ exports.startSyncthing = async function() {
   pc.unref()
   return true}
 
+async function readNote (term, line, tags) {
+  const rl = readline.createInterface ({input: process.stdin, output: process.stdout})
+  const question = new Promise (resolve => rl.question ('Enter the note line below:\n', resolve))
+  let note = await question
+  note = note.trim()
+  if (note === '') {term.processExit (0); return}
+  await fileNote (line, tags, note)
+  rl.close()
+  term.processExit (0)}
+
 // When invoked from console
 // cf. https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_accessing_the_main_module
 if (require.main === module) (async function() {
@@ -201,6 +211,8 @@ if (require.main === module) (async function() {
   line = line.trim()
   if (line === '') {term.processExit (0); return}
 
+  if (line == 'todo') {await readNote (term, line, []); return}
+
   const tags = new Set()
   for (;;) {
     term ('\n> ')
@@ -224,14 +236,7 @@ if (require.main === module) (async function() {
       // allow for swipe keyboard under Termux. It does not.
       // But we can swipe left on the extra buttons in order to switch to the
       // [“Text Input View”](https://wiki.termux.com/wiki/Touch_Keyboard)
-      const rl = readline.createInterface ({input: process.stdin, output: process.stdout})
-      const question = new Promise (resolve => rl.question ('Enter the note line below:\n', resolve))
-      let note = await question
-      note = note.trim()
-      if (note === '') {term.processExit (0); return}
-      await fileNote (line, tags, note)
-      rl.close()
-      term.processExit (0); return
+      await readNote (term, line, tags); return
     }
     tags.add (tag)
   }
