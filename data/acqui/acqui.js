@@ -4,13 +4,12 @@ const {spawn} = require ('child_process');
 const date = require ('date-and-time');  // https://www.npmjs.com/package/date-and-time
 const fs = require ('fs'); const fsp = fs.promises;
 const os = require ('os');
-const psList = require ('ps-list');
 // https://nodejs.org/dist/latest-v15.x/docs/api/readline.html
 const readline = require ('readline');
 // https://github.com/cronvel/terminal-kit/blob/master/doc/documentation.md
 // https://github.com/cronvel/terminal-kit/blob/master/doc/high-level.md
 const termkit = require ('terminal-kit');
-const {assert, log} = require ('log');
+const {assert, log} = require ('llog');
 const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 
 const HOME = os.homedir()
@@ -80,23 +79,6 @@ async function fileNote (item, tags, noteˢ) {
   notes.push (note)
   await saveNotes (notes)}
 
-/** Syncthing can be installed with `pkg install syncthing` under Termux
- * @returns {Promise<boolean>} True if Syncthing wasn't running */
-exports.startSyncthing = async function() {
-  const pcs = await psList ({all: false})
-  for (const pc of pcs)
-    if (pc.name == 'syncthing' || pc.name == 'syncthing.exe' || /^syncthing/.test (pc.cmd))
-      return false
-  log ('Starting syncthing…')
-  const stlog = fs.createWriteStream (HOME + '/syncthing.log')
-  await new Promise (resolve => stlog.on ('open', resolve))
-  const args = ['--no-browser', '--no-restart', '--no-upgrade']
-  if (win) args.push ('--no-console')
-  const pc = spawn ('syncthing', args,
-    {detached: true, stdio: [null, stlog, stlog]})
-  pc.unref()
-  return true}
-
 async function readNote (term, line, tags) {
   const rl = readline.createInterface ({input: process.stdin, output: process.stdout})
   const question = new Promise (resolve => rl.question ('Enter the note line below:\n', resolve))
@@ -115,8 +97,6 @@ if (require.main === module) (async function() {
   log.out = (line, loc) => {loc && term.gray (loc + '] '); term.gray (line); term ('\n')}
 
   term.windowTitle ('acquisition')
-
-  await exports.startSyncthing()
 
   log ('Loading timeline…')
   if (!ACQUI_DB) throw new Error ('!ACQUI_DB')
@@ -211,6 +191,7 @@ if (require.main === module) (async function() {
   line = line.trim()
   if (line === '') {term.processExit (0); return}
 
+  if (line.startsWith ('todo/')) {await readNote (term, line, [line.substring (5)]); return}
   if (line == 'todo') {await readNote (term, line, []); return}
 
   const tags = new Set()
