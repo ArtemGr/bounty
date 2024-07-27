@@ -99,7 +99,9 @@ def perfect_symmetry():
   ax.plot_trisurf(X[:, 0], X[:, 1], y_mul, cmap='viridis')
 
   dtrain = xgb.DMatrix(X, label=y_mul)
-  params = {'tree_method': 'gpu_hist'}
+  params = {
+    #'tree_method': 'gpu_hist'
+  }
   bst = xgb.train(params, dtrain, evals=[(dtrain, 'train')], num_boost_round=10)
   y_pred = bst.predict(dtrain)
 
