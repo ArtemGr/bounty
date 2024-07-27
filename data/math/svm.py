@@ -17,7 +17,7 @@ def sin():
   plt.grid (True)
 
   prob = svm.svm_problem (labels[:fold], features[:fold])
-  m = svm.svm_train (prob, '-s 3 -t 2 -q')  # epsilon RBF
+  m = svm.svm_train (prob, '-s 3 -t 2 -q -c 1 -g .1')  # epsilon RBF, C, γ
   y, _acc, _vals = svm.svm_predict (labels, features, m, '-q')
   plt.subplot (2, 1, 2)
   plt.plot (x, y, label= 'svm')

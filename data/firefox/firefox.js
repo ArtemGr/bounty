@@ -5,7 +5,7 @@ const date = require ('date-and-time');
 const fs = require ('fs'); const fsp = fs.promises;
 const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
 const lz4 = require ('lz4');
-const {log, snooze} = require ('log');
+const {log, snooze} = require ('llog');
 const os = require ('os');
 const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 

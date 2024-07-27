@@ -191,7 +191,7 @@ if (require.main === module) (async function() {
   line = line.trim()
   if (line === '') {term.processExit (0); return}
 
-  if (line.startsWith ('todo/')) {await readNote (term, line, [line.substring (5)]); return}
+  if (line.startsWith ('todo/')) {await readNote (term, 'todo', [line.substring (5)]); return}
   if (line == 'todo') {await readNote (term, line, []); return}
 
   const tags = new Set()

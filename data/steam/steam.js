@@ -11,7 +11,7 @@ const {assert} = require ('console');
 const fs = require ('fs'); const fsp = fs.promises;
 const {knuthShuffle} = require ('knuth-shuffle');  // https://stackoverflow.com/a/2450976/257568
 const os = require ('os');
-const {log, snooze} = require ('log');
+const {log, snooze} = require ('llog');
 const {webkit, Page} = require ('playwright-webkit');
 const yaml = require ('yaml');  // https://github.com/eemeli/yaml
 
@@ -126,7 +126,7 @@ exports.syncDb = async function (userId, fresh) {
  * @returns {Promise<Game[]>} Games listed locally in “steamapps”
  */
 exports.installed = async function() {
-  const steamapps = '/Program Files (x86)/Steam/steamapps'
+  const steamapps = fs.existsSync ('d:/steam/steamapps') ? 'd:/steam/steamapps' : '/Program Files (x86)/Steam/steamapps'
   const files = await fsp.readdir (steamapps)
   const games = []
   for (const fname of files) {
