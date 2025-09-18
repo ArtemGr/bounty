@@ -8,9 +8,9 @@ const os = require ('os');
 const readline = require ('readline');
 // https://github.com/cronvel/terminal-kit/blob/master/doc/documentation.md
 // https://github.com/cronvel/terminal-kit/blob/master/doc/high-level.md
-const termkit = require ('terminal-kit');
+const termkit = require ('terminal-kit');  // might be more reliable in “Windows Console Host” than WT
 const {assert, log} = require ('llog');
-const yaml = require ('yaml');  // https://github.com/eemeli/yaml
+const yaml = require ('yaml');  // “npm i yaml@next”, https://github.com/eemeli/yaml
 
 const HOME = os.homedir()
 const ACQUI_DB = process.env['ACQUI_DB']

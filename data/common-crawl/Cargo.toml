@@ -33,7 +33,7 @@ crossterm = "0.18"
 flate2 = "1"
 fomat-macros = "0.3"
 #glob = "0.3"
-gstuff = {version = "0.7", path = "../../../gstuff.rs", features = ["nightly", "crossterm", "rdtsc"]}
+gstuff = {version = "0.7", path = "../../../gstuff", features = ["nightly", "crossterm"]}
 #indexmap = {version = "2", features = ["serde"]}
 #inlinable_string = {version = "0.1", features = ["serde"]}
 #nom = "6"

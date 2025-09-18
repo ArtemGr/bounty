@@ -19,7 +19,7 @@
     "date-and-time": "^0.14.2",
     "log": "gist:25fad725870b0ada74df2bce7d115cc1",
     "ps-list": "^7.2.0",
-    "terminal-kit": "^2.1.2",
-    "yaml": "^2.0.0-5"
+    "terminal-kit": "^2.11.7",
+    "yaml": "^2.3.0"
   }
 }
