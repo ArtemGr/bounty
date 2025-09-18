@@ -93,6 +93,8 @@ async function readNote (term, line, tags) {
 // cf. https://nodejs.org/dist/latest-v15.x/docs/api/modules.html#modules_accessing_the_main_module
 if (require.main === module) (async function() {
 
+  if (0) {console.log('\x1b[31mThis text should be red\x1b[0m')}
+
   const term = termkit.terminal
   log.out = (line, loc) => {loc && term.gray (loc + '] '); term.gray (line); term ('\n')}
 
@@ -184,6 +186,7 @@ if (require.main === module) (async function() {
     autoCompleteMenu: true,  // By TAB
     tokenHook: (tok, end, prev, term, conf) => {
       // Should check whether the `tok` is known and display the going information if it is
+      // ⇒ Except we can not restore cursor position in cmd tokenHook, could be a bug.
     }
   }).promise
 
